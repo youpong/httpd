@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<profiles version="19">
+  <profile kind="CodeFormatterProfile" name="Cflat Project Formatter" version="19">
+    <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="86"/>
+    <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
+    <setting id="org.eclipse.jdt.core.formatter.use_on_off_tags" value="true"/>
+
+    <!-- Switch statement -->
+    <setting id="org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch" value="false"/>
+
+    <!-- Comment -->
+    <!--setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="86"/-->
+    <setting id="org.eclipse.jdt.core.formatter.join_lines_in_comments" value="false"/>
+    <setting id="org.eclipse.jdt.core.formatter.comment.format_line_comments"
+	     value="false"/>
+    <setting id="org.eclipse.jdt.core.formatter.comment.format_block_comments"
+	     value="false"/>
+  </profile>
+</profiles>

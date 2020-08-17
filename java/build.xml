@@ -1,0 +1,123 @@
+<project name="Daytime" default="test" basedir=".">
+  <description>
+    TODO:
+  </description>
+
+  <property name="src"   location="src"/>
+  <property name="test"  location="test"/>
+  <property name="build" location="bin"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib"   location="lib"/>
+  <property name="res"   location="res"/>
+
+  <path id="test.classpath">
+    <pathelement location="${build}"/>
+    <pathelement location="${lib}/junit-4.10.jar" />
+    <pathelement location="${lib}/hamcrest-core-1.2.jar" />
+  </path>
+
+  <target name="init">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${lib}"/>
+    <get dest="${lib}" skipexisting="Yes">
+      <url url="http://cloud.github.com/downloads/KentBeck/junit/junit-4.10.jar"/>
+      <url url="http://hamcrest.googlecode.com/files/hamcrest-core-1.2.jar"/>
+    </get>
+  </target>
+
+  <target name="compile" depends="init"
+          description="compile the source">
+    <javac destdir="${build}"
+           includeAntRuntime="no">
+      <src path="${src}"/>
+      <src path="${test}"/>
+      <classpath refid="test.classpath"/>
+    </javac>
+  </target>
+
+  <!-- under construction -->
+  <target name="jar" depends="compile"
+	  description="generate jar file">
+    <jar jarfile="${dist}/SAXSample2.jar">
+      <fileset dir="${build}" includes="**/*.class"/>
+      <fileset dir="${res}"/>
+      <manifest>
+	<attribute name="Main-Class" value="farm.Main"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- under construction -->
+  <target name="dist" depends="jar">
+  </target>
+
+  <target name="client1" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeClient">
+      <classpath refid="test.classpath" />
+      <arg value="radish.farm"/>
+      <arg value="daytime"/>
+    </java>
+  </target>
+
+  <target name="client2" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeClient">
+      <classpath refid="test.classpath" />
+      <arg value="radish6.farm"/>
+      <arg value="1024"/>
+    </java>
+  </target>
+
+  <target name="client3" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeClient">
+      <classpath refid="test.classpath" />
+      <arg value="127.0.0.1"/>
+      <arg value="1024"/>
+    </java>
+  </target>
+
+  <target name="client4" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeClient">
+      <classpath refid="test.classpath" />
+      <arg value="2408:45:a020:0:221:6aff:fe1a:23aa"/>
+      <arg value="1024"/>
+    </java>
+  </target>
+
+  <target name="server1" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeServer">
+      <classpath refid="test.classpath" />
+      <arg value="daytime"/>
+    </java>
+  </target>
+  
+  <target name="server2" depends="compile"
+          description="run">
+    <java fork="true" classname="farm.dt.DaytimeServer">
+      <classpath refid="test.classpath" />
+      <arg value="1024"/>
+    </java>
+  </target>
+
+  <target name="test" depends="compile"
+          description="Junit test">
+    <junit fork="yes" haltonfailure="yes">
+      <!-- write pl test tags here -->
+      <test name="farm.dt.AllTests"/>
+      <formatter type="plain" usefile="false"/>
+      <classpath refid="test.classpath"/>
+    </junit>
+  </target>
+
+  <target name="clean">
+    <delete includeEmptyDirs="true" quiet="true">
+      <fileset dir="${build}"/>
+      <fileset dir="${dist}"/>
+    </delete>
+  </target>
+</project>
