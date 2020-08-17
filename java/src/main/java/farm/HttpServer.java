@@ -63,23 +63,35 @@ public class HttpServer {
         }
     }
 
+    // TODO: Support <Connection: keep-alive>
     private void printRequest(Socket sock) throws IOException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(sock.getInputStream()));
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
-        char[] buf = new char[1024];
 
-        int len;
-        while ((len = in.read(buf, 0, 1024)) != -1) {
-            out.write(buf, 0, len);
-        }
+        String req = readRequest(in);
+
+        out.write(req, 0, req.length());
         out.flush();
     }
 
-    //Wed Jun  6 03:03:08 2012
+    private String readRequest(BufferedReader in) throws IOException {
+        StringBuffer strbuf = new StringBuffer();
+
+        char[] buf = new char[1024];
+        int len;
+        while ((len = in.read(buf, 0, 1024)) != -1) {
+            strbuf.append(new String(buf, 0, len));
+            if (strbuf.toString().indexOf("\r\n\r\n") != -1)
+                break;
+        }
+
+        return strbuf.toString();
+    }
+
     private void reply(Socket sock) throws IOException {
         PrintWriter os = new PrintWriter(sock.getOutputStream());
-        //	os.println("HTTP/1.1 200
+        os.println("HTTP/1.1 200 OK");
         os.println("Content-type: text/html");
         os.println("");
         os.println("<HTML><BODY>Hello, World</BODY></HTML>");
