@@ -1,12 +1,13 @@
 package farm;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class HttpServer {
     private Service service;
@@ -52,6 +53,7 @@ public class HttpServer {
             while (true) {
                 Socket sock = svSock.accept();
                 tcpPeerAddrPrint(sock);
+                printRequest(sock);
                 reply(sock);
                 sock.close();
             }
@@ -59,6 +61,19 @@ public class HttpServer {
             System.err.println(e);
             System.exit(Http.EXIT_FAILURE);
         }
+    }
+
+    private void printRequest(Socket sock) throws IOException {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(sock.getInputStream()));
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+        char[] buf = new char[1024];
+
+        int len;
+        while ((len = in.read(buf, 0, 1024)) != -1) {
+            out.write(buf, 0, len);
+        }
+        out.flush();
     }
 
     //Wed Jun  6 03:03:08 2012
