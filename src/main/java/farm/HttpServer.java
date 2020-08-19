@@ -140,5 +140,6 @@ class Worker implements Runnable {
         while ((len = in.read(buf, 0, 1024)) != -1) {
             out.write(buf, 0, len);
         }
+        in.close();
     }
 }
