@@ -2,6 +2,7 @@ package farm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HttpServer {
+public class HttpServer implements Runnable {
     private Service service;
     private ServerSocket svSock;
 
@@ -52,10 +53,7 @@ public class HttpServer {
             printHostPort();
             while (true) {
                 Socket sock = svSock.accept();
-                tcpPeerAddrPrint(sock);
-                printRequest(sock);
-                reply(sock);
-                sock.close();
+                new Thread(new Worker(sock)).start();
             }
         } catch (Exception e) {
             System.err.println(e);
@@ -63,10 +61,45 @@ public class HttpServer {
         }
     }
 
+    /**
+     * int sock, struct sockaddr *addr, socklen_t len);
+     */
+    private void printHostPort() {
+        System.out.println(
+                svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
+    }
+
+}
+
+class Worker implements Runnable {
+    Socket socket;
+
+    public Worker(Socket socket) {
+        this.socket = socket;
+    }
+
+    public void run() {
+        try {
+            tcpPeerAddrPrint();
+            printRequest();
+            reply();
+            socket.close();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
+
+    /**
+     * int sock, struct sockaddr *addr, socklen_t len);
+     */
+    private void tcpPeerAddrPrint() {
+        System.out.println("." + socket.getInetAddress() + ":" + socket.getPort());
+    }
+
     // TODO: Support <Connection: keep-alive>
-    private void printRequest(Socket sock) throws IOException {
+    private void printRequest() throws IOException {
         BufferedReader in = new BufferedReader(
-                new InputStreamReader(sock.getInputStream()));
+                new InputStreamReader(socket.getInputStream()));
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
 
         String req = readRequest(in);
@@ -89,25 +122,23 @@ public class HttpServer {
         return strbuf.toString();
     }
 
-    private void reply(Socket sock) throws IOException {
-        PrintWriter os = new PrintWriter(sock.getOutputStream());
-        os.println("HTTP/1.1 200 OK");
-        os.println("Content-type: text/html");
-        os.println("");
-        os.println("<HTML><BODY>Hello, World</BODY></HTML>");
-        os.flush();
+    private void reply() throws IOException {
+        PrintWriter out = new PrintWriter(socket.getOutputStream());
+        out.println("HTTP/1.1 200 OK");
+        out.println("Content-type: text/html");
+        out.println("");
+        readFile(out, "hello.html");
+        out.flush();
     }
 
-    private void printHostPort() {
-        System.out.println(
-                svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
-    }
+    private void readFile(PrintWriter out, String path) throws IOException {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(new FileInputStream(path)));
+        char[] buf = new char[1024];
 
-    /*
-     * 
-     * int sock, struct sockaddr *addr, socklen_t len);
-     */
-    private void tcpPeerAddrPrint(Socket sock) {
-        System.out.println("." + sock.getInetAddress() + ":" + sock.getPort());
+        int len;
+        while ((len = in.read(buf, 0, 1024)) != -1) {
+            out.write(buf, 0, len);
+        }
     }
 }
