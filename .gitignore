@@ -2,4 +2,8 @@ httpd
 a.out
 *~
 \#*#
+.classpath
+.project
 /target/
+/.cache/
+/.settings/

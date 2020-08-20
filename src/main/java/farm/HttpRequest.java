@@ -1,37 +1,37 @@
 package farm;
 
 public class HttpRequest {
-	private String method;
-	private String requestURI;
-	private String httpVersion;
+    private String method;
+    private String requestURI;
+    private String httpVersion;
 
-	public String getMethod() {
-		return method;
-	}
-	
-	public String getRequestURI() {
-		return requestURI;
-	}
-	
-	public String getHttpVersion() {
-		return httpVersion;
-	}
+    public String getMethod() {
+        return method;
+    }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
+    public String getRequestURI() {
+        return requestURI;
+    }
 
-	public void setRequestURI(String requestURI) {
-		this.requestURI = requestURI;
-	}
-	
-	public void setHttpVersion(String httpVersion) {
-		this.httpVersion = httpVersion;
-	}
+    public String getHttpVersion() {
+        return httpVersion;
+    }
 
-	public boolean hasMessageBody() {
-		// TODO 
-		return false;
-	}
-	
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public void setRequestURI(String requestURI) {
+        this.requestURI = requestURI;
+    }
+
+    public void setHttpVersion(String httpVersion) {
+        this.httpVersion = httpVersion;
+    }
+
+    public boolean hasMessageBody() {
+        // TODO 
+        return false;
+    }
+
 }
