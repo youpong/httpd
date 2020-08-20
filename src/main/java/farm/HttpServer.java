@@ -80,11 +80,10 @@ class Worker implements Runnable {
 	public void run() {
 		try {
 			tcpPeerAddrPrint();
-			//socket
-			HttpRequest request = Parser.parseHttpRequest(
-					new InputStreamReader(socket.getInputStream()));
+			// socket
+			HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket.getInputStream()));
 			printRequest(request);
-			
+
 			reply();
 			socket.close();
 		} catch (IOException e) {
@@ -104,7 +103,7 @@ class Worker implements Runnable {
 		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
 
 		String method = request.getMethod();
-		
+
 		out.write(method, 0, method.length());
 		out.flush();
 	}
