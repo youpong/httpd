@@ -2,6 +2,7 @@ package farm;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -13,6 +14,7 @@ import java.net.Socket;
 public class HttpServer implements Runnable {
     private Service service;
     private ServerSocket svSock;
+    private File documentRoot = new File("./www");
 
     public static void main(String args[]) {
         String service = Http.HTTP_SERVICE;
@@ -34,7 +36,10 @@ public class HttpServer implements Runnable {
             System.exit(Http.EXIT_FAILURE);
         }
     }
-
+    public File getDocumentRoot() {
+        return documentRoot;
+    }
+    
     public HttpServer(String service) throws UnknownServiceException {
         this.service = new Service(service);
     }
@@ -53,7 +58,7 @@ public class HttpServer implements Runnable {
             printHostPort();
             while (true) {
                 Socket sock = svSock.accept();
-                new Thread(new Worker(sock)).start();
+                new Thread(new Worker(this, sock)).start();
             }
         } catch (Exception e) {
             System.err.println(e);
@@ -72,8 +77,10 @@ public class HttpServer implements Runnable {
 
 class Worker implements Runnable {
     Socket socket;
+    HttpServer server;
 
-    public Worker(Socket socket) {
+    public Worker(HttpServer server, Socket socket) {
+        this.server = server;
         this.socket = socket;
     }
 
@@ -84,7 +91,7 @@ class Worker implements Runnable {
             HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket.getInputStream()));
             printRequest(request);
 
-            reply();
+            reply(request);
             socket.close();
         } catch (IOException e) {
             System.err.println(e);
@@ -108,13 +115,32 @@ class Worker implements Runnable {
         out.flush();
     }
 
-    private void reply() throws IOException {
+    private void reply(HttpRequest request) throws IOException {
         PrintWriter out = new PrintWriter(socket.getOutputStream());
-        out.println("HTTP/1.1 200 OK");
-        out.println("Content-type: text/html");
-        out.println("");
-        readFile(out, "hello.html");
-        out.flush();
+        
+        switch (request.getMethod()) {
+        case "GET":
+            File targetFile = new File(server.getDocumentRoot(), request.getRequestURI());
+            if (! targetFile.canRead()) {
+                out.print("HTTP/1.1 404 Not Found\r\n");
+                out.print("Content-type: text/html\r\n");
+                out.print("\r\n");
+                readFile(out, "www/error.html");
+                
+                out.flush();
+                return;
+            }
+
+            out.print("HTTP/1.1 200 OK\r\n");
+            out.print("Content-type: text/html\r\n");
+            out.print("\r\n");
+            readFile(out, targetFile.getPath());
+            out.flush();
+        case "POST":
+        default:
+            // TODO
+        }
+        
     }
 
     private void readFile(PrintWriter out, String path) throws IOException {
