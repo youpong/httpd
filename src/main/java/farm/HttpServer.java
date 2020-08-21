@@ -12,7 +12,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer implements Runnable {
+    public static final String HTTP_VERSION = "HTTP/1.1";
+
     private Service service;
+
     private ServerSocket svSock;
     private File documentRoot = new File("./www");
 
@@ -36,10 +39,11 @@ public class HttpServer implements Runnable {
             System.exit(Http.EXIT_FAILURE);
         }
     }
+
     public File getDocumentRoot() {
         return documentRoot;
     }
-    
+
     public HttpServer(String service) throws UnknownServiceException {
         this.service = new Service(service);
     }
@@ -117,22 +121,29 @@ class Worker implements Runnable {
 
     private void reply(HttpRequest request) throws IOException {
         PrintWriter out = new PrintWriter(socket.getOutputStream());
-        
+        HttpResponse response = new HttpResponse();
+
         switch (request.getMethod()) {
         case "GET":
             File targetFile = new File(server.getDocumentRoot(), request.getRequestURI());
-            if (! targetFile.canRead()) {
-                out.print("HTTP/1.1 404 Not Found\r\n");
-                out.print("Content-type: text/html\r\n");
+            if (!targetFile.canRead()) {
+                response.setStatusCode("404");
+                response.setReasonPhrase("Not Found");
+                response.setContentType("text/html");
+                out.print(response.genStatusLine());
+                out.print(response.genContentType());
                 out.print("\r\n");
                 readFile(out, "www/error.html");
-                
+
                 out.flush();
                 return;
             }
 
-            out.print("HTTP/1.1 200 OK\r\n");
-            out.print("Content-type: text/html\r\n");
+            response.setStatusCode("200");
+            response.setReasonPhrase("OK");
+            response.setContentType("text/html");
+            out.print(response.genStatusLine());
+            out.print(response.genContentType());
             out.print("\r\n");
             readFile(out, targetFile.getPath());
             out.flush();
@@ -140,7 +151,7 @@ class Worker implements Runnable {
         default:
             // TODO
         }
-        
+
     }
 
     private void readFile(PrintWriter out, String path) throws IOException {
