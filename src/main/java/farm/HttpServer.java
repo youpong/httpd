@@ -128,23 +128,16 @@ class Worker implements Runnable {
             File targetFile = new File(server.getDocumentRoot(), request.getRequestURI());
             if (!targetFile.canRead()) {
                 response.setStatusCode("404");
-                response.setReasonPhrase("Not Found");
                 response.setContentType("text/html");
-                out.print(response.genStatusLine());
-                out.print(response.genContentType());
-                out.print("\r\n");
+                out.print(response.gen());
                 readFile(out, "www/error.html");
-
                 out.flush();
                 return;
             }
 
             response.setStatusCode("200");
-            response.setReasonPhrase("OK");
             response.setContentType("text/html");
-            out.print(response.genStatusLine());
-            out.print(response.genContentType());
-            out.print("\r\n");
+            out.print(response.gen());
             readFile(out, targetFile.getPath());
             out.flush();
         case "POST":
