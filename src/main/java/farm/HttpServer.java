@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -82,20 +83,26 @@ public class HttpServer implements Runnable {
 class Worker implements Runnable {
     Socket socket;
     HttpServer server;
+    HttpLog log;
 
     public Worker(HttpServer server, Socket socket) {
         this.server = server;
         this.socket = socket;
+        // Writer tmp = new OutputStreamWriter(System.out);
+        this.log = new HttpLog(new OutputStreamWriter(System.out));
     }
 
     public void run() {
         try {
-            tcpPeerAddrPrint();
-            // socket
-            HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket.getInputStream()));
-            printRequest(request);
+            log.setPeerAddr(socket);
 
-            reply(request);
+            HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket.getInputStream()));
+            log.setRequest(request);
+
+            HttpResponse response = reply(request);
+            log.setResponse(response);
+
+            log.write();
             socket.close();
         } catch (IOException e) {
             System.err.println(e);
@@ -104,22 +111,22 @@ class Worker implements Runnable {
 
     /**
      * int sock, struct sockaddr *addr, socklen_t len);
+     *
+     * private void tcpPeerAddrPrint() { System.out.println("." +
+     * socket.getInetAddress() + ":" + socket.getPort()); }
      */
-    private void tcpPeerAddrPrint() {
-        System.out.println("." + socket.getInetAddress() + ":" + socket.getPort());
-    }
 
     // TODO: Support <Connection: keep-alive>
-    private void printRequest(HttpRequest request) throws IOException {
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+    /*
+     * private void printRequest(HttpRequest request) throws IOException {
+     * BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
+     * 
+     * String method = request.getMethod();
+     * 
+     * out.write(method, 0, method.length()); out.flush(); }
+     */
 
-        String method = request.getMethod();
-
-        out.write(method, 0, method.length());
-        out.flush();
-    }
-
-    private void reply(HttpRequest request) throws IOException {
+    private HttpResponse reply(HttpRequest request) throws IOException {
         PrintWriter out = new PrintWriter(socket.getOutputStream());
         HttpResponse response = new HttpResponse();
 
@@ -132,7 +139,7 @@ class Worker implements Runnable {
                 out.print(response.gen());
                 readFile(out, "www/error.html");
                 out.flush();
-                return;
+                return response;
             }
 
             response.setStatusCode("200");
@@ -140,11 +147,12 @@ class Worker implements Runnable {
             out.print(response.gen());
             readFile(out, targetFile.getPath());
             out.flush();
+            return response;
         case "POST":
         default:
-            // TODO
-        }
 
+        }
+        return null;
     }
 
     private void readFile(PrintWriter out, String path) throws IOException {

@@ -5,6 +5,10 @@ public class HttpRequest {
     private String requestURI;
     private String httpVersion;
 
+    public String genRequestLine() {
+        return method + " " + requestURI + " " + httpVersion;
+    }
+
     public String getMethod() {
         return method;
     }
