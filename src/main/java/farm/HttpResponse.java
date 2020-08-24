@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class HttpResponse {
     private String contentType;
+    private long contentLength;
     private String statusCode;
     private static Map<String, String> reasonPhrase;
 
@@ -18,6 +19,7 @@ public class HttpResponse {
         StringBuffer buf = new StringBuffer();
         buf.append(genStatusLine());
         buf.append(genContentType());
+        buf.append(genContentLength());
         buf.append("\r\n");
         return buf.toString();
     }
@@ -32,6 +34,10 @@ public class HttpResponse {
         return "Content-Type: " + contentType + "\r\n";
     }
 
+    public String genContentLength() {
+        return "Content-Length: " + contentLength + "\r\n";
+    }
+
     public String getStatusCode() {
         return statusCode;
     }
@@ -42,6 +48,14 @@ public class HttpResponse {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public void setContentLength(long length) {
+        this.contentLength = length;
+    }
+
+    public String getContentLength() {
+        return Long.toString(contentLength);
     }
 
 }

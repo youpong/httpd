@@ -144,6 +144,8 @@ class Worker implements Runnable {
 
             response.setStatusCode("200");
             response.setContentType("text/html");
+            response.setContentLength(targetFile.length());
+
             out.print(response.gen());
             readFile(out, targetFile.getPath());
             out.flush();
