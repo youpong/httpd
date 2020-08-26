@@ -51,11 +51,17 @@ public class HttpLog {
 		if (response != null)
 			buf.append(response.getStatusCode() + " ");
 
-		// TODO: if 0 -> '-'
+		// Content-Length
 		if (response.getContentLength() == 0)
 			buf.append("\"-\" ");
 		else
 			buf.append(response.getContentLength() + " ");
+
+		// Referer
+		if (request.getHeader("Referer") == null)
+			buf.append("\"-\" ");
+		else
+			buf.append("\"" + request.getHeader("Referer") + "\" ");
 
 		buf.append("\n");
 		out.write(buf.toString());

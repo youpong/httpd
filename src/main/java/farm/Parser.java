@@ -2,9 +2,10 @@ package farm;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Parser {
-
 	/**
 	 * generic-message = start-line *(message-header CRLF) CRLF [ message-body ]
 	 * start-line = Request-Line | Status-Line
@@ -12,7 +13,8 @@ public class Parser {
 	 * @param in
 	 * @return
 	 */
-	public static HttpRequest parseHttpRequest(Reader in) {
+	public static HttpRequest parseHttpRequest(Reader reader) {
+		Unreadable in = new Unreadable(reader);
 		HttpRequest request = new HttpRequest();
 		// TODO:
 		try {
@@ -26,7 +28,7 @@ public class Parser {
 		return request;
 	}
 
-	private static void messageBody(Reader in, HttpRequest request) {
+	private static void messageBody(Unreadable in, HttpRequest request) {
 		// TODO Auto-generated method stub
 
 	}
@@ -37,26 +39,48 @@ public class Parser {
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void messageHeader(Reader in, HttpRequest request) throws IOException {
-		int c;
+	private static void messageHeader(Unreadable in, HttpRequest request) throws IOException {
+		Map<String, String> map = new HashMap<String, String>();
 		StringBuffer sbuf = new StringBuffer();
 
+		int c;
 		while ((c = in.read()) != -1) {
-			if (c != '\r') {
+			// CRLF - end of header
+			if (c == '\r') {
 				in.read(); // leave '\n'
-				return;
+				break;
 			}
+			in.unread(c);
 
-			sbuf.append((char) c);
+			// key
+			while ((c = in.read()) != -1) {
+				if (c == ':')
+					break;
+				sbuf.append((char) c);
+			}
+			String key = sbuf.toString(); // not include ':'
+			sbuf = new StringBuffer();
+
+			// SP
+			while ((c = in.read()) != -1)
+				if (c != ' ')
+					break;
+			in.unread(c);
+
+			// value
 			while ((c = in.read()) != -1) {
 				if (c == '\r') {
-					in.read(); // leave '\n'
+					in.read(); // read '\n'
 					break;
 				}
 				sbuf.append((char) c);
 			}
-			//
+			String value = sbuf.toString();
+			sbuf = new StringBuffer();
+
+			map.put(key, value);
 		}
+		request.setHeader(map);
 	}
 
 	/**
@@ -66,7 +90,7 @@ public class Parser {
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void requestLine(Reader in, HttpRequest request) throws IOException {
+	private static void requestLine(Unreadable in, HttpRequest request) throws IOException {
 		int c;
 		StringBuffer sbuf;
 
@@ -97,5 +121,38 @@ public class Parser {
 		}
 		request.setHttpVersion(sbuf.toString());
 		in.read(); // leave '\n'
+	}
+}
+
+class Unreadable extends Reader {
+	Reader reader;
+	int buf;
+	boolean loaded = false;
+
+	Unreadable(Reader reader) {
+		this.reader = reader;
+	}
+
+	public int read() throws IOException {
+		if (loaded) {
+			loaded = false;
+			return buf;
+		}
+		return reader.read();
+	}
+
+	void unread(int c) {
+		loaded = true;
+		buf = c;
+	}
+
+	@Override
+	public int read(char[] cbuf, int off, int len) throws IOException {
+		return reader.read(cbuf, off, len);
+	}
+
+	@Override
+	public void close() throws IOException {
+		reader.close();
 	}
 }

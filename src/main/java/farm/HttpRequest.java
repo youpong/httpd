@@ -1,9 +1,12 @@
 package farm;
 
+import java.util.Map;
+
 public class HttpRequest {
 	private String method;
 	private String requestURI;
 	private String httpVersion;
+	private Map<String, String> headerMap = null;
 
 	public String genRequestLine() {
 		return method + " " + requestURI + " " + httpVersion;
@@ -38,4 +41,13 @@ public class HttpRequest {
 		return false;
 	}
 
+	public void setHeader(Map<String, String> map) {
+		this.headerMap = map;
+	}
+
+	public String getHeader(String key) {
+		if (headerMap == null)
+			return null;
+		return headerMap.get(key);
+	}
 }
