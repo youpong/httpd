@@ -63,7 +63,8 @@ public class HttpServer implements Runnable {
 			printHostPort();
 			while (true) {
 				Socket sock = svSock.accept();
-				new Thread(new Worker(this, sock)).start();
+				HttpLog log = new HttpLog(new OutputStreamWriter(System.out));
+				new Thread(new Worker(this, sock, log)).start();
 			}
 		} catch (Exception e) {
 			System.err.println(e);
@@ -85,11 +86,10 @@ class Worker implements Runnable {
 	HttpServer server;
 	HttpLog log;
 
-	public Worker(HttpServer server, Socket socket) {
+	public Worker(HttpServer server, Socket socket, HttpLog log) {
 		this.server = server;
 		this.socket = socket;
-		// Writer tmp = new OutputStreamWriter(System.out);
-		this.log = new HttpLog(new OutputStreamWriter(System.out));
+		this.log = log;
 	}
 
 	public void run() {
