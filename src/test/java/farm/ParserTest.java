@@ -30,7 +30,7 @@ public class ParserTest {
 		assertEquals("/", request.getRequestURI());
 		assertEquals("HTTP/1.1", request.getHttpVersion());
 	}
-	
+
 	@Test
 	public void getHeader() {
 		Reader reader = new StringReader("GET / HTTP/1.1\r\n" + "Referer: http://192.168.1.9/\r\n\r\n");

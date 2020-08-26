@@ -1,14 +1,12 @@
 package farm;
 
 import java.io.BufferedReader;
-//import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-//import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -72,9 +70,6 @@ public class HttpServer implements Runnable {
 		}
 	}
 
-	/**
-	 * int sock, struct sockaddr *addr, socklen_t len);
-	 */
 	private void printHostPort() {
 		System.out.println(svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
 	}
@@ -109,23 +104,6 @@ class Worker implements Runnable {
 		}
 	}
 
-	/**
-	 * int sock, struct sockaddr *addr, socklen_t len);
-	 *
-	 * private void tcpPeerAddrPrint() { System.out.println("." +
-	 * socket.getInetAddress() + ":" + socket.getPort()); }
-	 */
-
-	// TODO: Support <Connection: keep-alive>
-	/*
-	 * private void printRequest(HttpRequest request) throws IOException {
-	 * BufferedWriter out = new BufferedWriter(new OutputStreamWriter(System.out));
-	 * 
-	 * String method = request.getMethod();
-	 * 
-	 * out.write(method, 0, method.length()); out.flush(); }
-	 */
-
 	private HttpResponse reply(HttpRequest request) throws IOException {
 		PrintWriter out = new PrintWriter(socket.getOutputStream());
 		HttpResponse response = new HttpResponse();
@@ -133,26 +111,22 @@ class Worker implements Runnable {
 		switch (request.getMethod()) {
 		case "GET":
 			File targetFile = new File(server.getDocumentRoot(), request.getRequestURI());
-			if (!targetFile.canRead()) {
+			if (!targetFile.canRead() || targetFile.isDirectory()) {
+				targetFile = new File(server.getDocumentRoot(), "error.html");
 				response.setStatusCode("404");
-				response.setContentType("text/html");
-				out.print(response.gen());
-				readFile(out, "www/error.html");
-				out.flush();
-				return response;
-			}
+			} else
+				response.setStatusCode("200");
 
-			response.setStatusCode("200");
 			response.setContentType("text/html");
 			response.setContentLength(targetFile.length());
 
 			out.print(response.gen());
 			readFile(out, targetFile.getPath());
 			out.flush();
-			return response;
-		case "POST":
-		default:
 
+			return response;
+		default:
+			// TODO: throw new UnkExcpetion("");
 		}
 		return null;
 	}
