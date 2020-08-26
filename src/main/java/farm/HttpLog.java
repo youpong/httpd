@@ -46,14 +46,14 @@ public class HttpLog {
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z", Locale.US);
 		buf.append("[" + fmt.format(date) + "] ");
 
-		buf.append(request.genRequestLine() + " ");
+		buf.append("\"" + request.genRequestLine() + "\" ");
 
 		if (response != null)
 			buf.append(response.getStatusCode() + " ");
 
 		// TODO: if 0 -> '-'
 		if (response.getContentLength() == 0)
-			buf.append("- ");
+			buf.append("\"-\" ");
 		else
 			buf.append(response.getContentLength() + " ");
 
