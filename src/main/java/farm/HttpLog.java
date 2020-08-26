@@ -62,7 +62,13 @@ public class HttpLog {
 			buf.append("\"-\" ");
 		else
 			buf.append("\"" + request.getHeader("Referer") + "\" ");
-
+		
+		// User-Agent
+		if (request.getHeader("User-Agent") == null)
+			buf.append("\"-\" ");
+		else
+			buf.append("\"" + request.getHeader("User-Agent") + "\" ");
+		
 		buf.append("\n");
 		out.write(buf.toString());
 		out.flush();
