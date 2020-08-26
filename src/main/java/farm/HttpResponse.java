@@ -54,8 +54,8 @@ public class HttpResponse {
 		this.contentLength = length;
 	}
 
-	public String getContentLength() {
-		return Long.toString(contentLength);
+	public long getContentLength() {
+		return contentLength;
 	}
 
 }

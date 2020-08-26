@@ -51,7 +51,11 @@ public class HttpLog {
 		if (response != null)
 			buf.append(response.getStatusCode() + " ");
 
-		buf.append(response.getContentLength() + " ");
+		// TODO: if 0 -> '-'
+		if (response.getContentLength() == 0)
+			buf.append("- ");
+		else
+			buf.append(response.getContentLength() + " ");
 
 		buf.append("\n");
 		out.write(buf.toString());
