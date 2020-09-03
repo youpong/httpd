@@ -25,6 +25,7 @@ public class Parser {
 		} catch (IOException e) {
 			// TODO:
 		}
+		System.out.println("Debug: " + in.getCopy());
 		return request;
 	}
 
@@ -126,6 +127,7 @@ public class Parser {
 
 class Unreadable extends Reader {
 	Reader reader;
+	StringBuffer sbuf = new StringBuffer();
 	int buf;
 	boolean loaded = false;
 
@@ -138,7 +140,9 @@ class Unreadable extends Reader {
 			loaded = false;
 			return buf;
 		}
-		return reader.read();
+		int c = reader.read();
+		sbuf.append((char) c);
+		return c;
 	}
 
 	void unread(int c) {
@@ -154,5 +158,9 @@ class Unreadable extends Reader {
 	@Override
 	public void close() throws IOException {
 		reader.close();
+	}
+
+	public String getCopy() {
+		return sbuf.toString();
 	}
 }

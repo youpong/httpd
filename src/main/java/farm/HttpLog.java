@@ -48,8 +48,14 @@ public class HttpLog {
 
 		buf.append("\"" + request.genRequestLine() + "\" ");
 
-		if (response != null)
-			buf.append(response.getStatusCode() + " ");
+		if (response == null) {
+			buf.append("\n");
+			out.write(buf.toString());
+			out.flush();
+			return;
+		}
+
+		buf.append(response.getStatusCode() + " ");
 
 		// Content-Length
 		if (response.getContentLength() == 0)

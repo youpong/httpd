@@ -12,6 +12,7 @@ import java.net.Socket;
 
 public class HttpServer implements Runnable {
 	public static final String HTTP_VERSION = "HTTP/1.1";
+	public static final String SERVER_NAME = "bait/0.1";
 
 	private Service service;
 
@@ -71,7 +72,8 @@ public class HttpServer implements Runnable {
 	}
 
 	private void printHostPort() {
-		System.out.println(svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
+		System.out.println(svSock.getInetAddress().getHostName() + ":" + svSock
+				.getLocalPort());
 	}
 
 }
@@ -91,7 +93,8 @@ class Worker implements Runnable {
 		try {
 			log.setPeerAddr(socket);
 
-			HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket.getInputStream()));
+			HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket
+					.getInputStream()));
 			log.setRequest(request);
 
 			HttpResponse response = reply(request);
@@ -110,18 +113,28 @@ class Worker implements Runnable {
 
 		switch (request.getMethod()) {
 		case "GET":
-			File targetFile = new File(server.getDocumentRoot(), request.getRequestURI());
+		case "HEAD":
+			// Server
+			response.setServer(HttpServer.SERVER_NAME);
+
+			// Status Code
+			File targetFile = new File(server.getDocumentRoot(), request
+					.getRequestURI());
 			if (!targetFile.canRead() || targetFile.isDirectory()) {
 				targetFile = new File(server.getDocumentRoot(), "error.html");
 				response.setStatusCode("404");
 			} else
 				response.setStatusCode("200");
 
+			// Content-Type
 			response.setContentType("text/html");
+
+			// Content-Length(same value GET/HEAD)
 			response.setContentLength(targetFile.length());
 
 			out.print(response.gen());
-			readFile(out, targetFile.getPath());
+			if ("GET".equals(request.getMethod()))
+				readFile(out, targetFile.getPath());
 			out.flush();
 
 			return response;
@@ -132,7 +145,8 @@ class Worker implements Runnable {
 	}
 
 	private void readFile(PrintWriter out, String path) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				new FileInputStream(path)));
 		char[] buf = new char[1024];
 
 		int len;
