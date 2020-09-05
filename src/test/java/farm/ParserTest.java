@@ -23,7 +23,8 @@ public class ParserTest {
 
 	@Test
 	public void requestLine2() {
-		Reader reader = new StringReader("GET / HTTP/1.1\r\n" + "Connection: keep-alive\r\n\r\n");
+		Reader reader = new StringReader("GET / HTTP/1.1\r\n"
+				+ "Connection: keep-alive\r\n\r\n");
 		HttpRequest request = Parser.parseHttpRequest(reader);
 
 		assertEquals("GET", request.getMethod());
@@ -33,7 +34,8 @@ public class ParserTest {
 
 	@Test
 	public void getHeader() {
-		Reader reader = new StringReader("GET / HTTP/1.1\r\n" + "Referer: http://192.168.1.9/\r\n\r\n");
+		Reader reader = new StringReader("GET / HTTP/1.1\r\n"
+				+ "Referer: http://192.168.1.9/\r\n\r\n");
 		HttpRequest request = Parser.parseHttpRequest(reader);
 
 		assertEquals("GET", request.getMethod());

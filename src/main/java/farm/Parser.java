@@ -25,7 +25,10 @@ public class Parser {
 		} catch (IOException e) {
 			// TODO:
 		}
-		System.out.println("Debug: " + in.getCopy());
+
+		if (HttpServer.DEBUG_MODE)
+			System.out.println("Debug: " + in.getCopy());
+
 		return request;
 	}
 
@@ -40,7 +43,8 @@ public class Parser {
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void messageHeader(Unreadable in, HttpRequest request) throws IOException {
+	private static void messageHeader(Unreadable in, HttpRequest request)
+			throws IOException {
 		Map<String, String> map = new HashMap<String, String>();
 		StringBuffer sbuf = new StringBuffer();
 
@@ -91,7 +95,8 @@ public class Parser {
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void requestLine(Unreadable in, HttpRequest request) throws IOException {
+	private static void requestLine(Unreadable in, HttpRequest request)
+			throws IOException {
 		int c;
 		StringBuffer sbuf;
 

@@ -21,7 +21,7 @@ public class HttpLog {
 	}
 
 	public void setPeerAddr(Socket socket) {
-		peerAddr = socket.getInetAddress().getHostAddress();// + ":" + socket.getPort();
+		peerAddr = socket.getInetAddress().getHostAddress();
 	}
 
 	public void setRequest(HttpRequest request) {
@@ -43,7 +43,8 @@ public class HttpLog {
 		buf.append(peerAddr + " - - ");
 
 		// 22/Aug/2020:09:29:58 +0900
-		SimpleDateFormat fmt = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z", Locale.US);
+		SimpleDateFormat fmt = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z",
+				Locale.US);
 		buf.append("[" + fmt.format(date) + "] ");
 
 		buf.append("\"" + request.genRequestLine() + "\" ");

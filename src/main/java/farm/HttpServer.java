@@ -7,10 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer implements Runnable {
+	public static final boolean DEBUG_MODE = false;
 	public static final String HTTP_VERSION = "HTTP/1.1";
 	public static final String SERVER_NAME = "bait/0.1";
 
@@ -62,8 +64,7 @@ public class HttpServer implements Runnable {
 			printHostPort();
 			while (true) {
 				Socket sock = svSock.accept();
-				HttpLog log = new HttpLog(new OutputStreamWriter(System.out));
-				new Thread(new Worker(this, sock, log)).start();
+				new Thread(new Worker(this, sock)).start();
 			}
 		} catch (Exception e) {
 			System.err.println(e);
@@ -81,33 +82,42 @@ public class HttpServer implements Runnable {
 class Worker implements Runnable {
 	Socket socket;
 	HttpServer server;
-	HttpLog log;
 
-	public Worker(HttpServer server, Socket socket, HttpLog log) {
+	public Worker(HttpServer server, Socket socket) {
 		this.server = server;
 		this.socket = socket;
-		this.log = log;
 	}
 
 	public void run() {
 		try {
-			log.setPeerAddr(socket);
+			Reader reader = new InputStreamReader(socket.getInputStream());
+			HttpLog log;
 
-			HttpRequest request = Parser.parseHttpRequest(new InputStreamReader(socket
-					.getInputStream()));
-			log.setRequest(request);
+			while (true) {
+				log = new HttpLog(new OutputStreamWriter(System.out));
 
-			HttpResponse response = reply(request);
-			log.setResponse(response);
+				log.setPeerAddr(socket);
 
-			log.write();
+				HttpRequest request = Parser.parseHttpRequest(reader);
+				log.setRequest(request);
+
+				HttpResponse response = reply(request);
+				log.setResponse(response);
+				log.write();
+				if ("close".equals(request.getHeader("Connection")))
+					break;
+			}
+
 			socket.close();
 		} catch (IOException e) {
+			System.err.println(e);
+		} catch (Exception e) {
 			System.err.println(e);
 		}
 	}
 
-	private HttpResponse reply(HttpRequest request) throws IOException {
+	private HttpResponse reply(HttpRequest request) throws IOException,
+			UnknownMethodException {
 		PrintWriter out = new PrintWriter(socket.getOutputStream());
 		HttpResponse response = new HttpResponse();
 
@@ -139,9 +149,8 @@ class Worker implements Runnable {
 
 			return response;
 		default:
-			// TODO: throw new UnkExcpetion("");
+			throw new UnknownMethodException("Method: " + request.getMethod());
 		}
-		return null;
 	}
 
 	private void readFile(PrintWriter out, String path) throws IOException {

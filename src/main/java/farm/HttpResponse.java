@@ -14,7 +14,7 @@ public class HttpResponse {
 		reasonPhrase = new HashMap<String, String>();
 		reasonPhrase.put("200", "OK");
 		reasonPhrase.put("404", "Not Found");
-		//reasonPhrase.put("405", "Method Not Allowed");
+		// reasonPhrase.put("405", "Method Not Allowed");
 		reasonPhrase.put("501", "Not Implemented");
 	}
 
@@ -37,7 +37,7 @@ public class HttpResponse {
 	private String genServer() {
 		return "Server: " + this.serverName + "\r\n";
 	}
-	
+
 	public String genContentType() {
 		return "Content-Type: " + contentType + "\r\n";
 	}
