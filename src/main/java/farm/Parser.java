@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Parser {
+	Unreadable in;
+
+	private Parser(Reader in) {
+		this.in = new Unreadable(in);
+	}
+
 	/**
 	 * generic-message = start-line *(message-header CRLF) CRLF [ message-body ]
 	 * start-line = Request-Line | Status-Line
@@ -14,37 +20,35 @@ public class Parser {
 	 * @return
 	 */
 	public static HttpRequest parseHttpRequest(Reader reader) {
-		Unreadable in = new Unreadable(reader);
+		return new Parser(reader).parse();
+	}
+
+	public HttpRequest parse() {
 		HttpRequest request = new HttpRequest();
-		// TODO:
+
 		try {
-			requestLine(in, request); // = start-line
-			messageHeader(in, request);
+			requestLine(request);
+			messageHeader(request);
 			if (request.hasMessageBody())
-				messageBody(in, request);
+				messageBody(request);
 		} catch (IOException e) {
 			// TODO:
 		}
-
-		if (HttpServer.DEBUG_MODE)
-			System.out.println("Debug: " + in.getCopy());
-
+		/* TODO:
+		 * if (HttpServer.DEBUG_MODE) System.out.println("Debug: " + in.getCopy());
+		 */
 		return request;
 	}
 
-	private static void messageBody(Unreadable in, HttpRequest request) {
+	private void messageBody(HttpRequest request) {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**
-	 * 
-	 * @param in
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void messageHeader(Unreadable in, HttpRequest request)
-			throws IOException {
+	private void messageHeader(HttpRequest request) throws IOException {
 		Map<String, String> map = new HashMap<String, String>();
 		StringBuffer sbuf = new StringBuffer();
 
@@ -91,12 +95,10 @@ public class Parser {
 	/**
 	 * Request-Line = Method SP Request-URI SP HTTP-Version CRLF
 	 * 
-	 * @param in
 	 * @param request
 	 * @throws IOException
 	 */
-	private static void requestLine(Unreadable in, HttpRequest request)
-			throws IOException {
+	private void requestLine(HttpRequest request) throws IOException {
 		int c;
 		StringBuffer sbuf;
 
@@ -121,13 +123,18 @@ public class Parser {
 		// HTTP-Versoin
 		sbuf = new StringBuffer();
 		while ((c = in.read()) != -1) {
-			if (c == '\r')
+			if (c == '\r') {
+				// TODO: if (in.read() == '\n'); // drop '\n'
 				break;
+			}
 			sbuf.append((char) c);
 		}
 		request.setHttpVersion(sbuf.toString());
-		in.read(); // leave '\n'
+		in.read(); // removes trailing newline('\n')
 	}
+	/* TODO:
+	 * public static void consum(int a, int c) { if () }
+	 */
 }
 
 class Unreadable extends Reader {
