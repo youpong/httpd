@@ -119,7 +119,7 @@ class Worker implements Runnable {
 		} catch (UnknownMethodException e) {
 			if (HttpServer.DEBUG_MODE)
 				System.err.println(e);
-		} catch (UnexpectedChar e) {
+		} catch (UnexpectedCharException e) {
 			System.err.println(e);
 		}
 	}

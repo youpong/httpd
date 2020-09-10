@@ -15,7 +15,7 @@ public class Parser {
 	}
 
 	public static HttpRequest parseHttpRequest(Reader reader, boolean debug)
-			throws UnexpectedChar {
+			throws UnexpectedCharException {
 		return new Parser(reader, debug).parse();
 	}
 
@@ -25,9 +25,9 @@ public class Parser {
 	 * 
 	 * @param in
 	 * @return
-	 * @throws UnexpectedChar
+	 * @throws UnexpectedCharException
 	 */
-	private HttpRequest parse() throws UnexpectedChar {
+	private HttpRequest parse() throws UnexpectedCharException {
 		HttpRequest request = new HttpRequest();
 
 		try {
@@ -52,10 +52,10 @@ public class Parser {
 	/**
 	 * @param request
 	 * @throws IOException
-	 * @throws UnexpectedChar
+	 * @throws UnexpectedCharException
 	 */
 	private void messageHeader(HttpRequest request) throws IOException,
-			UnexpectedChar {
+			UnexpectedCharException {
 		Map<String, String> map = new HashMap<String, String>();
 
 		int c;
@@ -99,9 +99,10 @@ public class Parser {
 	 * 
 	 * @param request
 	 * @throws IOException
-	 * @throws UnexpectedChar
+	 * @throws UnexpectedCharException
 	 */
-	private void requestLine(HttpRequest request) throws IOException, UnexpectedChar {
+	private void requestLine(HttpRequest request) throws IOException,
+			UnexpectedCharException {
 		int c;
 		StringBuffer sbuf;
 
@@ -135,11 +136,11 @@ public class Parser {
 		request.setHttpVersion(sbuf.toString());
 	}
 
-	private void consum(int expected) throws IOException, UnexpectedChar {
+	private void consum(int expected) throws IOException, UnexpectedCharException {
 		int c = in.read();
 		if (c != expected)
-			throw new UnexpectedChar("expected (" + expected + ") actually (" + c
-					+ ")");
+			throw new UnexpectedCharException("expected (" + expected + ") actually ("
+					+ c + ")");
 	}
 }
 
