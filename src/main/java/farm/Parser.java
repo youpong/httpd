@@ -12,6 +12,10 @@ public class Parser {
 		this.in = new Unreadable(in);
 	}
 
+	public static HttpRequest parseHttpRequest(Reader reader) {
+		return new Parser(reader).parse();
+	}
+
 	/**
 	 * generic-message = start-line *(message-header CRLF) CRLF [ message-body ]
 	 * start-line = Request-Line | Status-Line
@@ -19,11 +23,7 @@ public class Parser {
 	 * @param in
 	 * @return
 	 */
-	public static HttpRequest parseHttpRequest(Reader reader) {
-		return new Parser(reader).parse();
-	}
-
-	public HttpRequest parse() {
+	private HttpRequest parse() {
 		HttpRequest request = new HttpRequest();
 
 		try {
@@ -32,7 +32,8 @@ public class Parser {
 			if (request.hasMessageBody())
 				messageBody(request);
 		} catch (IOException e) {
-			// TODO:
+			System.err.print(e);
+			System.exit(1);
 		}
 		/* TODO:
 		 * if (HttpServer.DEBUG_MODE) System.out.println("Debug: " + in.getCopy());
