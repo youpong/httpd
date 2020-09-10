@@ -57,7 +57,6 @@ public class Parser {
 	private void messageHeader(HttpRequest request) throws IOException,
 			UnexpectedChar {
 		Map<String, String> map = new HashMap<String, String>();
-		StringBuffer sbuf = new StringBuffer();
 
 		int c;
 		while ((c = in.read()) != -1) {
@@ -69,34 +68,29 @@ public class Parser {
 			in.unread(c);
 
 			// key
+			StringBuffer key = new StringBuffer();
 			while ((c = in.read()) != -1) {
 				if (c == ':')
 					break;
-				sbuf.append((char) c);
+				key.append((char) c);
 			}
-			String key = sbuf.toString(); // not include ':'
-			sbuf = new StringBuffer();
 
-			// TODO: consum(' ')
 			// SP
-			while ((c = in.read()) != -1)
-				if (c != ' ')
-					break;
-			in.unread(c);
+			consum(' ');
 
 			// value
+			StringBuffer value = new StringBuffer();
 			while ((c = in.read()) != -1) {
 				if (c == '\r') {
 					consum('\n');
 					break;
 				}
-				sbuf.append((char) c);
+				value.append((char) c);
 			}
-			String value = sbuf.toString();
-			sbuf = new StringBuffer();
 
-			map.put(key, value);
+			map.put(key.toString(), value.toString());
 		}
+
 		request.setHeader(map);
 	}
 
