@@ -14,7 +14,7 @@ public class ParserTest {
 	@Test
 	public void requestLine() {
 		Reader reader = new StringReader("GET / HTTP/1.1\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader);
+		HttpRequest request = Parser.parseHttpRequest(reader, false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());
@@ -25,7 +25,7 @@ public class ParserTest {
 	public void requestLine2() {
 		Reader reader = new StringReader("GET / HTTP/1.1\r\n"
 				+ "Connection: keep-alive\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader);
+		HttpRequest request = Parser.parseHttpRequest(reader, false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());
@@ -36,7 +36,7 @@ public class ParserTest {
 	public void getHeader() {
 		Reader reader = new StringReader("GET / HTTP/1.1\r\n"
 				+ "Referer: http://192.168.1.9/\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader);
+		HttpRequest request = Parser.parseHttpRequest(reader, false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());

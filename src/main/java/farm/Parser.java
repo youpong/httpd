@@ -6,14 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Parser {
-	Unreadable in;
+	private Unreadable in;
+	private boolean debug;
 
-	private Parser(Reader in) {
+	private Parser(Reader in, boolean debug) {
 		this.in = new Unreadable(in);
+		this.debug = debug;
 	}
 
-	public static HttpRequest parseHttpRequest(Reader reader) {
-		return new Parser(reader).parse();
+	public static HttpRequest parseHttpRequest(Reader reader, boolean debug) {
+		return new Parser(reader, debug).parse();
 	}
 
 	/**
@@ -35,9 +37,9 @@ public class Parser {
 			System.err.print(e);
 			System.exit(1);
 		}
-		/* TODO:
-		 * if (HttpServer.DEBUG_MODE) System.out.println("Debug: " + in.getCopy());
-		 */
+		if (debug)  
+			System.out.println("Debug: " + in.getCopy());
+		
 		return request;
 	}
 

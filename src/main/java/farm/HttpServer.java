@@ -98,7 +98,7 @@ class Worker implements Runnable {
 
 				log.setPeerAddr(socket);
 
-				HttpRequest request = Parser.parseHttpRequest(reader);
+				HttpRequest request = Parser.parseHttpRequest(reader, HttpServer.DEBUG_MODE); 
 				log.setRequest(request);
 
 				HttpResponse response = reply(request);
