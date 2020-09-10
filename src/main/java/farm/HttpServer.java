@@ -93,16 +93,21 @@ class Worker implements Runnable {
 			Reader reader = new InputStreamReader(socket.getInputStream());
 			HttpLog log;
 
+			// while Connection is alive
 			while (true) {
 				log = new HttpLog(new OutputStreamWriter(System.out));
 
 				log.setPeerAddr(socket);
 
-				HttpRequest request = Parser.parseHttpRequest(reader, HttpServer.DEBUG_MODE); 
+				HttpRequest request = Parser.parseHttpRequest(reader,
+						HttpServer.DEBUG_MODE);
 				log.setRequest(request);
-
+				/*
+				 * if(request.isInvalid()) { break; }
+				 */
 				HttpResponse response = reply(request);
 				log.setResponse(response);
+
 				log.write();
 				if ("close".equals(request.getHeader("Connection")))
 					break;
@@ -111,8 +116,9 @@ class Worker implements Runnable {
 			socket.close();
 		} catch (IOException e) {
 			System.err.println(e);
-		} catch (Exception e) {
-			System.err.println(e);
+		} catch (UnknownMethodException e) {
+			if (HttpServer.DEBUG_MODE)
+				System.err.println(e);
 		}
 	}
 
