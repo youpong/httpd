@@ -14,7 +14,8 @@ public class Parser {
 		this.debug = debug;
 	}
 
-	public static HttpRequest parseHttpRequest(Reader reader, boolean debug) {
+	public static HttpRequest parseHttpRequest(Reader reader, boolean debug)
+			throws UnexpectedChar {
 		return new Parser(reader, debug).parse();
 	}
 
@@ -24,8 +25,9 @@ public class Parser {
 	 * 
 	 * @param in
 	 * @return
+	 * @throws UnexpectedChar
 	 */
-	private HttpRequest parse() {
+	private HttpRequest parse() throws UnexpectedChar {
 		HttpRequest request = new HttpRequest();
 
 		try {
@@ -37,9 +39,9 @@ public class Parser {
 			System.err.print(e);
 			System.exit(1);
 		}
-		if (debug)  
+		if (debug)
 			System.out.println("Debug: " + in.getCopy());
-		
+
 		return request;
 	}
 
@@ -50,8 +52,10 @@ public class Parser {
 	/**
 	 * @param request
 	 * @throws IOException
+	 * @throws UnexpectedChar
 	 */
-	private void messageHeader(HttpRequest request) throws IOException {
+	private void messageHeader(HttpRequest request) throws IOException,
+			UnexpectedChar {
 		Map<String, String> map = new HashMap<String, String>();
 		StringBuffer sbuf = new StringBuffer();
 
@@ -59,7 +63,7 @@ public class Parser {
 		while ((c = in.read()) != -1) {
 			// CRLF - end of header
 			if (c == '\r') {
-				in.read(); // leave '\n'
+				consum('\n');
 				break;
 			}
 			in.unread(c);
@@ -73,6 +77,7 @@ public class Parser {
 			String key = sbuf.toString(); // not include ':'
 			sbuf = new StringBuffer();
 
+			// TODO: consum(' ')
 			// SP
 			while ((c = in.read()) != -1)
 				if (c != ' ')
@@ -82,7 +87,7 @@ public class Parser {
 			// value
 			while ((c = in.read()) != -1) {
 				if (c == '\r') {
-					in.read(); // read '\n'
+					consum('\n');
 					break;
 				}
 				sbuf.append((char) c);
@@ -100,8 +105,9 @@ public class Parser {
 	 * 
 	 * @param request
 	 * @throws IOException
+	 * @throws UnexpectedChar
 	 */
-	private void requestLine(HttpRequest request) throws IOException {
+	private void requestLine(HttpRequest request) throws IOException, UnexpectedChar {
 		int c;
 		StringBuffer sbuf;
 
@@ -127,17 +133,20 @@ public class Parser {
 		sbuf = new StringBuffer();
 		while ((c = in.read()) != -1) {
 			if (c == '\r') {
-				// TODO: if (in.read() == '\n'); // drop '\n'
+				consum('\n');
 				break;
 			}
 			sbuf.append((char) c);
 		}
 		request.setHttpVersion(sbuf.toString());
-		in.read(); // removes trailing newline('\n')
 	}
-	/* TODO:
-	 * public static void consum(int a, int c) { if () }
-	 */
+
+	private void consum(int expected) throws IOException, UnexpectedChar {
+		int c = in.read();
+		if (c != expected)
+			throw new UnexpectedChar("expected (" + expected + ") actually (" + c
+					+ ")");
+	}
 }
 
 class Unreadable extends Reader {
