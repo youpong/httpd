@@ -10,14 +10,13 @@ import java.util.Locale;
 
 public class HttpLog {
 	Writer out;
-	Date date;
+	Date requestDate;
 	HttpRequest request;
 	HttpResponse response;
 	String peerAddr;
 
 	public HttpLog(Writer out) {
 		this.out = out;
-		this.date = new Date();
 	}
 
 	public void setPeerAddr(Socket socket) {
@@ -26,6 +25,7 @@ public class HttpLog {
 
 	public void setRequest(HttpRequest request) {
 		this.request = request;
+		this.requestDate = new Date();
 	}
 
 	public void setResponse(HttpResponse response) {
@@ -45,7 +45,7 @@ public class HttpLog {
 		// 22/Aug/2020:09:29:58 +0900
 		SimpleDateFormat fmt = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z",
 				Locale.US);
-		buf.append("[" + fmt.format(date) + "] ");
+		buf.append("[" + fmt.format(requestDate) + "] ");
 
 		buf.append("\"" + request.genRequestLine() + "\" ");
 
