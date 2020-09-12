@@ -54,8 +54,8 @@ public class Parser {
 	 * @throws IOException
 	 * @throws UnexpectedCharException
 	 */
-	private void messageHeader(HttpRequest request) throws IOException,
-			UnexpectedCharException {
+	private void messageHeader(HttpRequest request)
+			throws IOException, UnexpectedCharException {
 		Map<String, String> map = new HashMap<String, String>();
 
 		int c;
@@ -101,8 +101,8 @@ public class Parser {
 	 * @throws IOException
 	 * @throws UnexpectedCharException
 	 */
-	private void requestLine(HttpRequest request) throws IOException,
-			UnexpectedCharException {
+	private void requestLine(HttpRequest request)
+			throws IOException, UnexpectedCharException {
 		int c;
 		StringBuffer sbuf;
 
@@ -139,8 +139,8 @@ public class Parser {
 	private void consum(int expected) throws IOException, UnexpectedCharException {
 		int c = in.read();
 		if (c != expected)
-			throw new UnexpectedCharException("expected (" + expected + ") actually ("
-					+ c + ")");
+			throw new UnexpectedCharException(
+					"expected (" + expected + ") actually (" + c + ")");
 	}
 }
 

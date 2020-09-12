@@ -73,8 +73,8 @@ public class HttpServer implements Runnable {
 	}
 
 	private void printHostPort() {
-		System.out.println(svSock.getInetAddress().getHostName() + ":" + svSock
-				.getLocalPort());
+		System.out.println(
+				svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
 	}
 
 }
@@ -124,8 +124,8 @@ class Worker implements Runnable {
 		}
 	}
 
-	private HttpResponse reply(HttpRequest request) throws IOException,
-			UnknownMethodException {
+	private HttpResponse reply(HttpRequest request)
+			throws IOException, UnknownMethodException {
 		PrintWriter out = new PrintWriter(socket.getOutputStream());
 		HttpResponse response = new HttpResponse();
 
@@ -136,8 +136,8 @@ class Worker implements Runnable {
 			response.setServer(HttpServer.SERVER_NAME);
 
 			// Status Code
-			File targetFile = new File(server.getDocumentRoot(), request
-					.getRequestURI());
+			File targetFile = new File(server.getDocumentRoot(),
+					request.getRequestURI());
 			if (!targetFile.canRead() || targetFile.isDirectory()) {
 				targetFile = new File(server.getDocumentRoot(), "error.html");
 				response.setStatusCode("404");
@@ -162,8 +162,8 @@ class Worker implements Runnable {
 	}
 
 	private void readFile(PrintWriter out, String path) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				new FileInputStream(path)));
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(new FileInputStream(path)));
 		char[] buf = new char[1024];
 
 		int len;
