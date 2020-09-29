@@ -47,7 +47,7 @@ public class HttpLog {
 				Locale.US);
 		buf.append("[" + fmt.format(requestDate) + "] ");
 
-		buf.append("\"" + request.getMethod() + " " + request.getRequestURI() + " " 
+		buf.append("\"" + request.getMethod() + " " + request.getRequestURI() + " "
 				+ request.getHttpVersion() + "\" ");
 
 		if (response == null) {

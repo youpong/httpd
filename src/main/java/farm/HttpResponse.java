@@ -17,7 +17,7 @@ public class HttpResponse {
 	private String statusCode;
 	private String reasonPhrase;
 	private Map<String, String> headerMap = new HashMap<String, String>();
-	private byte[] body;
+	private byte[] body = null;
 
 	static {
 		reasonPhraseMap = new HashMap<String, String>();
@@ -82,8 +82,8 @@ public class HttpResponse {
 		generateStatusLine(os);
 		generateAllHeaders(os);
 		os.write("\r\n".getBytes());
-		//genBody(os);
-
+		generateBody(os);
+		
 		os.flush();
 	}
 
@@ -104,5 +104,13 @@ public class HttpResponse {
 			buf.append("Content-Length: 0\r\n");
 
 		os.write(buf.toString().getBytes());
+	}
+	
+	private void generateBody(OutputStream os) throws IOException {
+		if (body == null)
+			return;
+		
+		os.write(body);
+		os.flush();
 	}
 }

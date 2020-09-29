@@ -1,15 +1,15 @@
 package farm;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class HttpServer implements Runnable {
+public class HttpServer {
 	public static final boolean DEBUG_MODE = false;
 	public static final String HTTP_VERSION = "HTTP/1.1";
 	public static final String SERVER_NAME = "bait/0.1";
@@ -33,7 +33,7 @@ public class HttpServer implements Runnable {
 
 		try {
 			HttpServer server = new HttpServer(service);
-			server.run();
+			server.execute();
 		} catch (UnknownServiceException e) {
 			printUsage();
 			System.exit(Http.EXIT_FAILURE);
@@ -56,7 +56,7 @@ public class HttpServer implements Runnable {
 		System.err.println("Usage: HttpServer [service]");
 	}
 
-	public void run() {
+	public void execute() {
 		try {
 			svSock = new ServerSocket(service.getPort());
 			printHostPort();
@@ -88,7 +88,6 @@ class Worker implements Runnable {
 
 	public void run() {
 		try {
-			//Reader reader = new InputStreamReader(socket.getInputStream());
 			HttpLog log;
 
 			// while Connection is alive
@@ -104,6 +103,7 @@ class Worker implements Runnable {
 				 * if(request.isInvalid()) { break; }
 				 */
 				HttpResponse response = reply(request);
+				response.generate(socket.getOutputStream());
 				log.setResponse(response);
 
 				log.write();
@@ -124,15 +124,12 @@ class Worker implements Runnable {
 
 	private HttpResponse reply(HttpRequest request)
 			throws IOException, UnknownMethodException {
-		//PrintWriter out = new PrintWriter(socket.getOutputStream());
-		OutputStream os = socket.getOutputStream();
 		HttpResponse response = new HttpResponse();
 
 		switch (request.getMethod()) {
-		case "GET":
-		case "HEAD":
+		case "GET" :
+		case "HEAD" :
 			// Server
-			//response.setServer(HttpServer.SERVER_NAME);
 			response.setHeader("Server", HttpServer.SERVER_NAME);
 
 			// Status Code
@@ -145,33 +142,31 @@ class Worker implements Runnable {
 				response.setStatusCode("200");
 
 			// Content-Type
-			//response.setContentType("text/html");
 			response.setHeader("Content-Type", "text/html");
 
-			// Content-Length(same value GET/HEAD)
-			//response.setContentLength(targetFile.length());
+			// Content-Length(set same value with GET/HEAD)
 			response.setHeader("Content-Length", Long.toString(targetFile.length()));
 
-			//out.print(response.gen());
-			response.generate(os);
+			// Body
 			if ("GET".equals(request.getMethod()))
-				readFile(os, targetFile.getPath());
-			os.flush();
+				readFile(response, targetFile.getPath());
 
 			return response;
-		default:
+		default :
 			throw new UnknownMethodException("Method: " + request.getMethod());
 		}
 	}
 
-	private void readFile(OutputStream os, String path) throws IOException {
+	private void readFile(HttpResponse response, String path) throws IOException {
 		InputStream is = new FileInputStream(path);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		byte[] buf = new byte[1024];
 
 		int len;
 		while ((len = is.read(buf, 0, 1024)) != -1) {
 			os.write(buf, 0, len);
 		}
+		response.setBody(os.toByteArray());
 		is.close();
 	}
 }
