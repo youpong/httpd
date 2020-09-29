@@ -102,11 +102,12 @@ class Worker implements Runnable {
 				/*
 				 * if(request.isInvalid()) { break; }
 				 */
-				HttpResponse response = reply(request);
+				HttpResponse response = createHttpResponse(request);
 				response.generate(socket.getOutputStream());
 				log.setResponse(response);
 
 				log.write();
+
 				if ("close".equals(request.getHeader("Connection")))
 					break;
 			}
@@ -122,7 +123,7 @@ class Worker implements Runnable {
 		}
 	}
 
-	private HttpResponse reply(HttpRequest request)
+	private HttpResponse createHttpResponse(HttpRequest request)
 			throws IOException, UnknownMethodException {
 		HttpResponse response = new HttpResponse();
 
