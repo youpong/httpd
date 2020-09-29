@@ -1,73 +1,108 @@
 package farm;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * respsents HTTP Response message.
+ * 
+ * @author nakajimay
+ */
 public class HttpResponse {
-	private String contentType;
-	private long contentLength;
+	private final String HTTP_VERSION = "HTTP/1.1";
+	private static Map<String, String> reasonPhraseMap;
+	private String httpVersion;
 	private String statusCode;
-	private String serverName;
-	private static Map<String, String> reasonPhrase;
+	private String reasonPhrase;
+	private Map<String, String> headerMap = new HashMap<String, String>();
+	private byte[] body;
 
 	static {
-		reasonPhrase = new HashMap<String, String>();
-		reasonPhrase.put("200", "OK");
-		reasonPhrase.put("404", "Not Found");
+		reasonPhraseMap = new HashMap<String, String>();
+		reasonPhraseMap.put("200", "OK");
+		reasonPhraseMap.put("404", "Not Found");
 		// reasonPhrase.put("405", "Method Not Allowed");
-		reasonPhrase.put("501", "Not Implemented");
+		reasonPhraseMap.put("501", "Not Implemented");
 	}
 
-	public String gen() {
-		StringBuffer buf = new StringBuffer();
-		buf.append(genStatusLine());
-		buf.append(genServer());
-		buf.append(genContentType());
-		buf.append(genContentLength());
-		buf.append("\r\n");
-		return buf.toString();
+	public void setHttpVersion(String httpVersion) {
+		this.httpVersion = httpVersion;
 	}
 
-	public String genStatusLine() {
-		String phrase = reasonPhrase.get(statusCode);
-
-		return HttpServer.HTTP_VERSION + " " + statusCode + " " + phrase + "\r\n";
-	}
-
-	private String genServer() {
-		return "Server: " + this.serverName + "\r\n";
-	}
-
-	public String genContentType() {
-		return "Content-Type: " + contentType + "\r\n";
-	}
-
-	public String genContentLength() {
-		return "Content-Length: " + contentLength + "\r\n";
-	}
-
-	public String getStatusCode() {
-		return statusCode;
+	public String getHttpVersion() {
+		return httpVersion;
 	}
 
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
 	}
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
+	public String getStatusCode() {
+		return statusCode;
 	}
 
-	public void setContentLength(long length) {
-		this.contentLength = length;
+	public void setResonPhrase(String reasonPhrase) {
+		this.reasonPhrase = reasonPhrase;
 	}
 
-	public long getContentLength() {
-		return contentLength;
+	public String getReasonPhrase() {
+		return reasonPhrase;
 	}
 
-	public void setServer(String serverName) {
-		this.serverName = serverName;
+	public void setHeader(String key, String value) {
+		headerMap.put(key, value);
 	}
 
+	public void setAllHeaders(Map<String, String> map) {
+		headerMap.putAll(map);
+	}
+
+	public String getHeader(String key) {
+		return headerMap.get(key);
+	}
+
+	public void setBody(byte[] body) {
+		this.body = body;
+	}
+
+	/**
+	 * write Contents, HTTP message payload.
+	 */
+	public void writeBody(OutputStream os) throws IOException {
+		os.write(body);
+		os.flush();
+	}
+
+	/**
+	 * Generate HTTP message. put it on HTTP.
+	 */
+	public void generate(OutputStream os) throws IOException {
+		generateStatusLine(os);
+		generateAllHeaders(os);
+		os.write("\r\n".getBytes());
+		//genBody(os);
+
+		os.flush();
+	}
+
+	private void generateStatusLine(OutputStream os) throws IOException {
+		String buf = HTTP_VERSION + " " + statusCode + " "
+				+ reasonPhraseMap.get(statusCode) + "\r\n";
+		os.write(buf.getBytes());
+	}
+
+	private void generateAllHeaders(OutputStream os) throws IOException {
+		StringBuffer buf = new StringBuffer();
+
+		for (var entry : headerMap.entrySet()) {
+			buf.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
+		}
+
+		if (!headerMap.containsKey("Content-Length"))
+			buf.append("Content-Length: 0\r\n");
+
+		os.write(buf.toString().getBytes());
+	}
 }

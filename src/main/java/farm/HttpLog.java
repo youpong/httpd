@@ -47,7 +47,8 @@ public class HttpLog {
 				Locale.US);
 		buf.append("[" + fmt.format(requestDate) + "] ");
 
-		buf.append("\"" + request.genRequestLine() + "\" ");
+		buf.append("\"" + request.getMethod() + " " + request.getRequestURI() + " " 
+				+ request.getHttpVersion() + "\" ");
 
 		if (response == null) {
 			buf.append("\n");
@@ -59,10 +60,10 @@ public class HttpLog {
 		buf.append(response.getStatusCode() + " ");
 
 		// Content-Length
-		if (response.getContentLength() == 0)
+		if (Long.parseLong(response.getHeader("Content-Length")) == 0)
 			buf.append("\"-\" ");
 		else
-			buf.append(response.getContentLength() + " ");
+			buf.append(response.getHeader("Content-Length") + " ");
 
 		// Referer
 		if (request.getHeader("Referer") == null)

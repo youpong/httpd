@@ -1,13 +1,11 @@
 package farm;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -90,7 +88,7 @@ class Worker implements Runnable {
 
 	public void run() {
 		try {
-			Reader reader = new InputStreamReader(socket.getInputStream());
+			//Reader reader = new InputStreamReader(socket.getInputStream());
 			HttpLog log;
 
 			// while Connection is alive
@@ -99,7 +97,7 @@ class Worker implements Runnable {
 
 				log.setPeerAddr(socket);
 
-				HttpRequest request = Parser.parseHttpRequest(reader,
+				HttpRequest request = HttpRequestParser.parse(socket.getInputStream(),
 						HttpServer.DEBUG_MODE);
 				log.setRequest(request);
 				/*
@@ -126,14 +124,16 @@ class Worker implements Runnable {
 
 	private HttpResponse reply(HttpRequest request)
 			throws IOException, UnknownMethodException {
-		PrintWriter out = new PrintWriter(socket.getOutputStream());
+		//PrintWriter out = new PrintWriter(socket.getOutputStream());
+		OutputStream os = socket.getOutputStream();
 		HttpResponse response = new HttpResponse();
 
 		switch (request.getMethod()) {
 		case "GET":
 		case "HEAD":
 			// Server
-			response.setServer(HttpServer.SERVER_NAME);
+			//response.setServer(HttpServer.SERVER_NAME);
+			response.setHeader("Server", HttpServer.SERVER_NAME);
 
 			// Status Code
 			File targetFile = new File(server.getDocumentRoot(),
@@ -145,15 +145,18 @@ class Worker implements Runnable {
 				response.setStatusCode("200");
 
 			// Content-Type
-			response.setContentType("text/html");
+			//response.setContentType("text/html");
+			response.setHeader("Content-Type", "text/html");
 
 			// Content-Length(same value GET/HEAD)
-			response.setContentLength(targetFile.length());
+			//response.setContentLength(targetFile.length());
+			response.setHeader("Content-Length", Long.toString(targetFile.length()));
 
-			out.print(response.gen());
+			//out.print(response.gen());
+			response.generate(os);
 			if ("GET".equals(request.getMethod()))
-				readFile(out, targetFile.getPath());
-			out.flush();
+				readFile(os, targetFile.getPath());
+			os.flush();
 
 			return response;
 		default:
@@ -161,15 +164,14 @@ class Worker implements Runnable {
 		}
 	}
 
-	private void readFile(PrintWriter out, String path) throws IOException {
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(new FileInputStream(path)));
-		char[] buf = new char[1024];
+	private void readFile(OutputStream os, String path) throws IOException {
+		InputStream is = new FileInputStream(path);
+		byte[] buf = new byte[1024];
 
 		int len;
-		while ((len = in.read(buf, 0, 1024)) != -1) {
-			out.write(buf, 0, len);
+		while ((len = is.read(buf, 0, 1024)) != -1) {
+			os.write(buf, 0, len);
 		}
-		in.close();
+		is.close();
 	}
 }

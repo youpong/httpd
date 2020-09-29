@@ -1,20 +1,18 @@
 package farm;
 
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.Reader;
-import java.io.StringReader;
-
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ParserTest {
+public class HttpRequestParserTest {
 
 	@Test
 	public void requestLine() throws UnexpectedCharException {
-		Reader reader = new StringReader("GET / HTTP/1.1\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader, false);
+		InputStream is = new ByteArrayInputStream(
+				"GET / HTTP/1.1\r\n\r\n".getBytes());
+		HttpRequest request = HttpRequestParser.parse(is, false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());
@@ -23,9 +21,13 @@ public class ParserTest {
 
 	@Test
 	public void requestLine2() throws UnexpectedCharException {
-		Reader reader = new StringReader(
-				"GET / HTTP/1.1\r\n" + "Connection: keep-alive\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader, false);
+		String requestString =
+		// @formatter:off
+				"GET / HTTP/1.1\r\n" + 
+				"Connection: keep-alive\r\n\r\n";
+		// @formatter:on
+		HttpRequest request = HttpRequestParser
+				.parse(new ByteArrayInputStream(requestString.getBytes()), false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());
@@ -34,9 +36,13 @@ public class ParserTest {
 
 	@Test
 	public void getHeader() throws UnexpectedCharException {
-		Reader reader = new StringReader(
-				"GET / HTTP/1.1\r\n" + "Referer: http://192.168.1.9/\r\n\r\n");
-		HttpRequest request = Parser.parseHttpRequest(reader, false);
+		String requestString =
+		// @formatter:off
+				"GET / HTTP/1.1\r\n" + 
+				"Referer: http://192.168.1.9/\r\n\r\n";
+		// @formatter:on
+		HttpRequest request = HttpRequestParser
+				.parse(new ByteArrayInputStream(requestString.getBytes()), false);
 
 		assertEquals("GET", request.getMethod());
 		assertEquals("/", request.getRequestURI());
