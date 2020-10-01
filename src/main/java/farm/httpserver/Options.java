@@ -32,7 +32,7 @@ public class Options {
 
 		return opts;
 	}
-	
+
 	private static void printUsage() {
 		System.err.println("Usage: HttpServer [service]");
 	}
@@ -48,11 +48,11 @@ public class Options {
 	public boolean debug() {
 		return debug;
 	}
-	
+
 	public File documentRoot() {
 		return documentRoot;
 	}
-	
+
 	public Service service() {
 		return service;
 	}

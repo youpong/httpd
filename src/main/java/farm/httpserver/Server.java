@@ -16,7 +16,7 @@ public class Server {
 	public static void main(String args[]) {
 		Options opts = Options.parse(args);
 		Server server = new Server(opts);
-		server.execute();	
+		server.execute();
 	}
 
 	public Server(Options options) {

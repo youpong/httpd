@@ -83,7 +83,7 @@ public class HttpResponse {
 		generateAllHeaders(os);
 		os.write("\r\n".getBytes());
 		generateBody(os);
-		
+
 		os.flush();
 	}
 
@@ -105,11 +105,11 @@ public class HttpResponse {
 
 		os.write(buf.toString().getBytes());
 	}
-	
+
 	private void generateBody(OutputStream os) throws IOException {
 		if (body == null)
 			return;
-		
+
 		os.write(body);
 		os.flush();
 	}
