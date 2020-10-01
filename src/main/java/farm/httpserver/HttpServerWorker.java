@@ -1,4 +1,4 @@
-package farm;
+package farm.httpserver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,6 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+
+import farm.HttpLog;
+import farm.HttpRequest;
+import farm.HttpRequestParser;
+import farm.HttpResponse;
+import farm.UnexpectedCharException;
+import farm.UnknownMethodException;
 
 class HttpServerWorker implements Runnable {
 	Socket socket;

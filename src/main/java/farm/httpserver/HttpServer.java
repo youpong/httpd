@@ -1,8 +1,12 @@
-package farm;
+package farm.httpserver;
 
 import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import farm.Http;
+import farm.Service;
+import farm.UnknownServiceException;
 
 public class HttpServer {
 	public static final boolean DEBUG_MODE = false;

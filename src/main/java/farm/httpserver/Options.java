@@ -1,4 +1,4 @@
-package farm;
+package farm.httpserver;
 
 public class Options {
 
