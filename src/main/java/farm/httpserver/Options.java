@@ -1,9 +1,13 @@
 package farm.httpserver;
 
+import java.io.File;
+
 public class Options {
 
 	private String dest = "-";
 	private String uri;
+	private boolean debug;
+	private File documentRoot = new File("www");
 
 	public static Options parse(String[] args) {
 		Options opts = new Options();
@@ -27,4 +31,11 @@ public class Options {
 		return dest;
 	}
 
+	public boolean debug() {
+		return debug;
+	}
+	
+	public File documentRoot() {
+		return documentRoot;
+	}
 }

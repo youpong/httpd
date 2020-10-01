@@ -17,10 +17,10 @@ import farm.UnknownMethodException;
 
 class HttpServerWorker implements Runnable {
 	Socket socket;
-	HttpServer server;
+	Options options;
 
-	public HttpServerWorker(HttpServer server, Socket socket) {
-		this.server = server;
+	public HttpServerWorker(Socket socket, Options options) {
+		this.options = options;
 		this.socket = socket;
 	}
 
@@ -35,7 +35,7 @@ class HttpServerWorker implements Runnable {
 				log.setPeerAddr(socket);
 
 				HttpRequest request = HttpRequestParser.parse(socket.getInputStream(),
-						HttpServer.DEBUG_MODE);
+						options.debug());
 				log.setRequest(request);
 				/*
 				 * if(request.isInvalid()) { break; }
@@ -54,7 +54,7 @@ class HttpServerWorker implements Runnable {
 		} catch (IOException e) {
 			System.err.println(e);
 		} catch (UnknownMethodException e) {
-			if (HttpServer.DEBUG_MODE)
+			if (options.debug())
 				System.err.println(e);
 		} catch (UnexpectedCharException e) {
 			System.err.println(e);
@@ -72,10 +72,10 @@ class HttpServerWorker implements Runnable {
 			response.setHeader("Server", HttpServer.SERVER_NAME);
 
 			// Status Code
-			File targetFile = new File(server.getDocumentRoot(),
+			File targetFile = new File(options.documentRoot(),
 					request.getRequestURI());
 			if (!targetFile.canRead() || targetFile.isDirectory()) {
-				targetFile = new File(server.getDocumentRoot(), "error.html");
+				targetFile = new File(options.documentRoot(), "error.html");
 				response.setStatusCode("404");
 			} else
 				response.setStatusCode("200");

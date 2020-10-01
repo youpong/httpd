@@ -9,14 +9,16 @@ import farm.Service;
 import farm.UnknownServiceException;
 
 public class HttpServer {
-	public static final boolean DEBUG_MODE = false;
+	//
+	// static
+	//
 	public static final String HTTP_VERSION = "HTTP/1.1";
 	public static final String SERVER_NAME = "bait/0.1";
 
 	private Service service;
+	private Options options;
 
 	private ServerSocket svSock;
-	private File documentRoot = new File("./www");
 
 	public static void main(String args[]) {
 		String service = Http.HTTP_SERVICE;
@@ -30,8 +32,10 @@ public class HttpServer {
 			service = args[0];
 		}
 
+		Options opts = new Options();
+		
 		try {
-			HttpServer server = new HttpServer(service);
+			HttpServer server = new HttpServer(service, opts);
 			server.execute();
 		} catch (UnknownServiceException e) {
 			printUsage();
@@ -39,20 +43,13 @@ public class HttpServer {
 		}
 	}
 
-	public File getDocumentRoot() {
-		return documentRoot;
-	}
-
-	public HttpServer(String service) throws UnknownServiceException {
-		this.service = new Service(service);
-	}
-
-	public HttpServer(Service service) {
-		this.service = service;
-	}
-
 	private static void printUsage() {
 		System.err.println("Usage: HttpServer [service]");
+	}
+
+	public HttpServer(String service, Options options) throws UnknownServiceException {
+		this.service = new Service(service);
+		this.options = options;
 	}
 
 	public void execute() {
@@ -61,7 +58,7 @@ public class HttpServer {
 			printHostPort();
 			while (true) {
 				Socket sock = svSock.accept();
-				new Thread(new HttpServerWorker(this, sock)).start();
+				new Thread(new HttpServerWorker(sock, options)).start();
 			}
 		} catch (Exception e) {
 			System.err.println(e);
@@ -73,5 +70,4 @@ public class HttpServer {
 		System.out.println(
 				svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
 	}
-
 }
