@@ -1,4 +1,4 @@
-package farm;
+package farm.httpserver;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -8,14 +8,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class HttpLog {
+import farm.HttpRequest;
+import farm.HttpResponse;
+
+public class Logger {
 	Writer out;
 	Date requestDate;
 	HttpRequest request;
 	HttpResponse response;
 	String peerAddr;
 
-	public HttpLog(Writer out) {
+	public Logger(Writer out) {
 		this.out = out;
 	}
 

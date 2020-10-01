@@ -8,38 +8,35 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import farm.HttpLog;
 import farm.HttpRequest;
 import farm.HttpRequestParser;
 import farm.HttpResponse;
 import farm.UnexpectedCharException;
 import farm.UnknownMethodException;
 
-class HttpServerWorker implements Runnable {
+class Worker implements Runnable {
 	Socket socket;
 	Options options;
 
-	public HttpServerWorker(Socket socket, Options options) {
+	public Worker(Socket socket, Options options) {
 		this.options = options;
 		this.socket = socket;
 	}
 
 	public void run() {
 		try {
-			HttpLog log;
+			Logger log;
 
 			// while Connection is alive
 			while (true) {
-				log = new HttpLog(new OutputStreamWriter(System.out));
+				log = new Logger(new OutputStreamWriter(System.out));
 
 				log.setPeerAddr(socket);
 
 				HttpRequest request = HttpRequestParser.parse(socket.getInputStream(),
 						options.debug());
 				log.setRequest(request);
-				/*
-				 * if(request.isInvalid()) { break; }
-				 */
+
 				HttpResponse response = createHttpResponse(request);
 				response.generate(socket.getOutputStream());
 				log.setResponse(response);
@@ -69,7 +66,7 @@ class HttpServerWorker implements Runnable {
 		case "GET" :
 		case "HEAD" :
 			// Server
-			response.setHeader("Server", HttpServer.SERVER_NAME);
+			response.setHeader("Server", Server.SERVER_NAME);
 
 			// Status Code
 			File targetFile = new File(options.documentRoot(),

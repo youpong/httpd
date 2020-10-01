@@ -1,11 +1,10 @@
 package farm.httpserver;
 
 import java.net.ServerSocket;
-import java.net.Socket;
 
 import farm.Http;
 
-public class HttpServer {
+public class Server {
 	//
 	// server constants
 	//
@@ -16,11 +15,11 @@ public class HttpServer {
 
 	public static void main(String args[]) {
 		Options opts = Options.parse(args);
-		HttpServer server = new HttpServer(opts);
+		Server server = new Server(opts);
 		server.execute();	
 	}
 
-	public HttpServer(Options options) {
+	public Server(Options options) {
 		this.options = options;
 	}
 
@@ -29,8 +28,8 @@ public class HttpServer {
 			ServerSocket svSock = new ServerSocket(options.service().getPort());
 			printHostPort(svSock);
 			while (true) {
-				Socket sock = svSock.accept();
-				new Thread(new HttpServerWorker(sock, options)).start();
+				Runnable runnable = new Worker(svSock.accept(), options);
+				new Thread(runnable).start();
 			}
 		} catch (Exception e) {
 			System.err.println(e);
