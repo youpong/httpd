@@ -15,15 +15,14 @@ public class Server {
 
 	public static void main(String args[]) {
 		Options opts = Options.parse(args);
-		Server server = new Server(opts);
-		server.execute();
+		new Server(opts).start();
 	}
 
 	public Server(Options options) {
 		this.options = options;
 	}
 
-	public void execute() {
+	public void start() {
 		try {
 			ServerSocket svSock = new ServerSocket(options.service().getPort());
 			printHostPort(svSock);
