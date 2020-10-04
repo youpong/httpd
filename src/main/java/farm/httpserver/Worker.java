@@ -3,9 +3,9 @@ package farm.httpserver;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import farm.HttpRequest;
@@ -29,7 +29,7 @@ class Worker implements Runnable {
 
 			// while Connection is alive
 			while (true) {
-				log = new Logger(new OutputStreamWriter(System.out));
+				log = new Logger(new FileWriter(options.accessLog(), true));
 
 				log.setPeerAddr(socket);
 
@@ -63,8 +63,8 @@ class Worker implements Runnable {
 		HttpResponse response = new HttpResponse();
 
 		switch (request.getMethod()) {
-		case "GET" :
-		case "HEAD" :
+		case "GET":
+		case "HEAD":
 			// Server
 			response.setHeader("Server", Server.SERVER_NAME);
 
@@ -88,7 +88,7 @@ class Worker implements Runnable {
 				readFile(response, targetFile.getPath());
 
 			return response;
-		default :
+		default:
 			throw new UnknownMethodException("Method: " + request.getMethod());
 		}
 	}

@@ -13,6 +13,7 @@ public class Options {
 	private String uri;
 	private boolean debug;
 	private File documentRoot = new File("www");
+	private File accessLog = new File("access.log");
 
 	public static Options parse(String[] args) {
 		Options opts = new Options();
@@ -51,6 +52,10 @@ public class Options {
 
 	public File documentRoot() {
 		return documentRoot;
+	}
+
+	public File accessLog() {
+		return accessLog;
 	}
 
 	public Service service() {
