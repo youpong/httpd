@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HttpRequestParserTest {
 
 	@Test
-	public void requestLine() throws UnexpectedCharException {
+	public void requestLine() throws Exception {
 		InputStream is = new ByteArrayInputStream(
 				"GET / HTTP/1.1\r\n\r\n".getBytes());
 		HttpRequest request = HttpRequestParser.parse(is, false);
@@ -20,7 +20,7 @@ public class HttpRequestParserTest {
 	}
 
 	@Test
-	public void requestLine2() throws UnexpectedCharException {
+	public void requestLine2() throws Exception {
 		String requestString =
 		// @formatter:off
 				"GET / HTTP/1.1\r\n" + 
@@ -35,7 +35,7 @@ public class HttpRequestParserTest {
 	}
 
 	@Test
-	public void getHeader() throws UnexpectedCharException {
+	public void getHeader() throws Exception {
 		String requestString =
 		// @formatter:off
 				"GET / HTTP/1.1\r\n" + 

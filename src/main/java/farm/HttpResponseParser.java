@@ -13,7 +13,7 @@ public class HttpResponseParser extends HttpMessageParser {
 	}
 
 	public static HttpResponse parse(InputStream is, boolean debug)
-			throws UnexpectedCharException {
+			throws UnexpectedCharException, IOException {
 		return new HttpResponseParser(is, debug).parse();
 	}
 
@@ -24,23 +24,16 @@ public class HttpResponseParser extends HttpMessageParser {
 	 * @param in
 	 * @return
 	 * @throws UnexpectedCharException
+	 * @throws IOException
 	 */
-	private HttpResponse parse() throws UnexpectedCharException {
+	private HttpResponse parse() throws UnexpectedCharException, IOException {
 		HttpResponse response = new HttpResponse();
 
-		try {
-			statusLine(response);
-			messageHeader(response);
-			//if (response.hasMessageBody())
-			messageBody(response);
-		} catch (IOException e) {
-			System.err.print(e);
-			System.exit(1);
-		}
-		/*
-		if (debug)
-			System.out.println("Debug: " + in.getCopy());
-		*/
+		statusLine(response);
+		messageHeader(response);
+		//if (response.hasMessageBody())
+		messageBody(response);
+
 		return response;
 	}
 
