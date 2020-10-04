@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import farm.Http;
 import farm.HttpRequest;
 import farm.HttpRequestParser;
 import farm.HttpResponse;
-import farm.UnexpectedCharException;
 import farm.UnknownMethodException;
 
 class Worker implements Runnable {
@@ -48,14 +48,10 @@ class Worker implements Runnable {
 			}
 
 			socket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.err.println(e);
-		} catch (UnknownMethodException e) {
-			if (options.debug())
-				System.err.println(e);
-		} catch (UnexpectedCharException e) {
-			System.err.println(e);
-		}
+			System.exit(Http.EXIT_FAILURE);
+		}		
 	}
 
 	private HttpResponse createHttpResponse(HttpRequest request)
