@@ -22,25 +22,12 @@ public class Logger {
 		this.out = out;
 	}
 
-	public void setPeerAddr(Socket socket) {
-		peerAddr = socket.getInetAddress().getHostAddress();
-	}
-
-	public void setRequest(HttpRequest request) {
-		this.request = request;
-		this.requestDate = new Date();
-	}
-
-	public void setResponse(HttpResponse response) {
-		this.response = response;
-	}
-
 	/**
 	 * 192.168.1.7 - - [22/Aug/2020:11:48:57 +0900] "GET /favicon.ico HTTP/1.1" 404
 	 * 197 "http://192.168.1.9/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6)
 	 * AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
 	 */
-	public void write() throws IOException {
+	private void write() throws IOException {
 		StringBuffer buf = new StringBuffer();
 
 		buf.append(peerAddr + " - - ");
@@ -83,5 +70,16 @@ public class Logger {
 		buf.append("\n");
 		out.write(buf.toString());
 		out.flush();
+	}
+
+	public synchronized void write(Socket sock, HttpRequest req, HttpResponse res)
+			throws IOException {
+		this.requestDate = new Date();
+
+		this.peerAddr = sock.getInetAddress().getHostAddress();
+		this.request = req;
+		this.response = res;
+
+		write();
 	}
 }

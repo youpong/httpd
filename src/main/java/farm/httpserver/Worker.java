@@ -3,7 +3,6 @@ package farm.httpserver;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -16,32 +15,25 @@ import farm.UnknownMethodException;
 
 class Worker implements Runnable {
 	Socket socket;
+	Logger log;
 	Options options;
 
-	public Worker(Socket socket, Options options) {
+	public Worker(Socket socket, Logger log, Options options) {
 		this.options = options;
+		this.log = log;
 		this.socket = socket;
 	}
 
 	public void run() {
 		try {
-			Logger log;
-
 			// while Connection is alive
 			while (true) {
-				log = new Logger(new FileWriter(options.accessLog(), true));
-
-				log.setPeerAddr(socket);
-
 				HttpRequest request = HttpRequestParser.parse(socket.getInputStream(),
 						options.debug());
-				log.setRequest(request);
-
 				HttpResponse response = createHttpResponse(request);
 				response.generate(socket.getOutputStream());
-				log.setResponse(response);
 
-				log.write();
+				log.write(socket, request, response);
 
 				if ("close".equals(request.getHeader("Connection")))
 					break;
@@ -51,7 +43,7 @@ class Worker implements Runnable {
 		} catch (Exception e) {
 			System.err.println(e);
 			System.exit(Http.EXIT_FAILURE);
-		}		
+		}
 	}
 
 	private HttpResponse createHttpResponse(HttpRequest request)

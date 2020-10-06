@@ -1,5 +1,6 @@
 package farm.httpserver;
 
+import java.io.FileWriter;
 import java.net.ServerSocket;
 
 import farm.Http;
@@ -24,10 +25,13 @@ public class Server {
 
 	public void start() {
 		try {
+			Logger log = new Logger(new FileWriter(options.accessLog(), true));
+
 			ServerSocket svSock = new ServerSocket(options.service().getPort());
 			printHostPort(svSock);
+
 			while (true) {
-				Runnable runnable = new Worker(svSock.accept(), options);
+				Runnable runnable = new Worker(svSock.accept(), log, options);
 				new Thread(runnable).start();
 			}
 		} catch (Exception e) {
