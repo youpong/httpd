@@ -19,16 +19,19 @@ public class Options {
 		Options opts = new Options();
 
 		try {
-			if (args.length == 0 || args.length > 1) {
+			if (args.length > 1) {
 				printUsage();
 				System.exit(Http.EXIT_FAILURE);
 			}
 
-			if (args.length == 1) {
+			if (args.length == 1)
 				opts.service = new Service(args[0]);
-			}
+			else
+				opts.service = new Service(Http.HTTP_SERVICE);
+
 		} catch (UnknownServiceException e) {
-			// TODO
+			System.err.print(e.getMessage());
+			System.exit(Http.EXIT_FAILURE);
 		}
 
 		return opts;
