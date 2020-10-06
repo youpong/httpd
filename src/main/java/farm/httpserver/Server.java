@@ -41,7 +41,7 @@ public class Server {
 	}
 
 	private void printHostPort(ServerSocket svSock) {
-		System.out.println(
+		System.out.println("Server listen " +
 				svSock.getInetAddress().getHostName() + ":" + svSock.getLocalPort());
 	}
 }
