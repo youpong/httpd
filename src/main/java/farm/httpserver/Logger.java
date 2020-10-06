@@ -3,7 +3,6 @@ package farm.httpserver;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.Socket;
-//import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
