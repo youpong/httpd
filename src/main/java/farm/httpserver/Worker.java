@@ -42,7 +42,6 @@ class Worker implements Runnable {
 			socket.close();
 		} catch (Exception e) {
 			System.err.println(e);
-			System.exit(Http.EXIT_FAILURE);
 		}
 	}
 
