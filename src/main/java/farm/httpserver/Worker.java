@@ -10,6 +10,7 @@ import java.net.Socket;
 import farm.HttpRequest;
 import farm.HttpRequestParser;
 import farm.HttpResponse;
+import farm.NullRequestException;
 import farm.UnknownMethodException;
 
 class Worker implements Runnable {
@@ -37,10 +38,16 @@ class Worker implements Runnable {
 				if ("close".equals(request.getHeader("Connection")))
 					break;
 			}
-
-			socket.close();
+		} catch (NullRequestException e) {
+			// no-op
 		} catch (Exception e) {
 			System.err.println(e);
+		} finally {
+			try {
+				socket.close();			
+			} catch(Exception e) {
+				// no-op
+			}
 		}
 	}
 

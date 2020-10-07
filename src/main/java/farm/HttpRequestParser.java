@@ -12,7 +12,7 @@ public class HttpRequestParser extends HttpMessageParser {
 	}
 
 	public static HttpRequest parse(InputStream is, boolean debug)
-			throws UnexpectedCharException, IOException {
+			throws UnexpectedCharException, IOException, NullRequestException {
 		return new HttpRequestParser(is, debug).parse();
 	}
 
@@ -23,8 +23,9 @@ public class HttpRequestParser extends HttpMessageParser {
 	 * @param in
 	 * @return
 	 * @throws UnexpectedCharException
+	 * @throws NullRequestException 
 	 */
-	private HttpRequest parse() throws IOException, UnexpectedCharException {
+	private HttpRequest parse() throws IOException, UnexpectedCharException, NullRequestException {
 		HttpRequest request = new HttpRequest();
 
 		requestLine(request);
@@ -41,12 +42,18 @@ public class HttpRequestParser extends HttpMessageParser {
 	 * @param request
 	 * @throws IOException
 	 * @throws UnexpectedCharException
+	 * @throws NullRequestException 
 	 */
 	private void requestLine(HttpRequest request)
-			throws IOException, UnexpectedCharException {
+			throws IOException, UnexpectedCharException, NullRequestException {
 		int c;
 		StringBuffer sbuf;
 
+		if ((c = is.read()) == -1) {
+			throw new NullRequestException("");
+		}
+		is.unread(c);
+		
 		// Method
 		sbuf = new StringBuffer();
 		while ((c = is.read()) != -1) {
