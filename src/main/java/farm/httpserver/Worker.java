@@ -46,7 +46,7 @@ class Worker implements Runnable {
 			try {
 				socket.close();			
 			} catch(Exception e) {
-				// no-op
+				System.err.println(e);
 			}
 		}
 	}
