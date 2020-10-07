@@ -1,7 +1,5 @@
 package farm;
 
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,6 +12,7 @@ public class HttpResponseTest {
 	@Test
 	public void generateAndParse() throws IOException, UnexpectedCharException {
 		HttpResponse res = new HttpResponse();
+		res.setHttpVersion("HTTP/0.9");
 		res.setStatusCode("200");
 
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -22,7 +21,7 @@ public class HttpResponseTest {
 		HttpResponse res2 = HttpResponseParser
 				.parse(new ByteArrayInputStream(os.toByteArray()), false);
 
-		assertEquals("HTTP/1.1", res2.getHttpVersion());
+		assertEquals("HTTP/0.9", res2.getHttpVersion());
 		assertEquals("200", res2.getStatusCode());
 		assertEquals("OK", res2.getReasonPhrase());
 	}
@@ -30,6 +29,7 @@ public class HttpResponseTest {
 	@Test
 	public void generateAndParse2() throws IOException, UnexpectedCharException {
 		HttpResponse res = new HttpResponse();
+		res.setHttpVersion("HTTP/1.1");
 		res.setStatusCode("404");
 		res.setHeader("Content-Type", "text/html");
 
@@ -49,6 +49,7 @@ public class HttpResponseTest {
 	@Test
 	public void testGen() throws IOException {
 		HttpResponse response = new HttpResponse();
+		response.setHttpVersion("HTTP/1.1");
 		response.setStatusCode("404");
 		response.setHeader("Server", "bait/0.1");
 		response.setHeader("Content-Type", "text/html");

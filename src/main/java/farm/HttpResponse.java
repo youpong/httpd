@@ -11,7 +11,6 @@ import java.util.Map;
  * @author nakajimay
  */
 public class HttpResponse {
-	private final String HTTP_VERSION = "HTTP/1.1";
 	private static Map<String, String> reasonPhraseMap;
 	private String httpVersion;
 	private String statusCode;
@@ -88,7 +87,7 @@ public class HttpResponse {
 	}
 
 	private void generateStatusLine(OutputStream os) throws IOException {
-		String buf = HTTP_VERSION + " " + statusCode + " "
+		String buf = httpVersion + " " + statusCode + " "
 				+ reasonPhraseMap.get(statusCode) + "\r\n";
 		os.write(buf.getBytes());
 	}

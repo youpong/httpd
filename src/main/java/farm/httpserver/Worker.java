@@ -51,9 +51,9 @@ class Worker implements Runnable {
 		switch (request.getMethod()) {
 		case "GET" :
 		case "HEAD" :
-			// Server
-			response.setHeader("Server", Server.SERVER_NAME);
-
+			// HTTP Version
+			response.setHttpVersion(Server.HTTP_VERSION);
+			
 			// Status Code
 			File targetFile = new File(options.documentRoot(),
 					request.getRequestURI());
@@ -62,6 +62,9 @@ class Worker implements Runnable {
 				response.setStatusCode("404");
 			} else
 				response.setStatusCode("200");
+
+			// Server
+			response.setHeader("Server", Server.SERVER_NAME);
 
 			// Content-Type
 			response.setHeader("Content-Type", "text/html");
