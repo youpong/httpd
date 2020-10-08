@@ -43,14 +43,7 @@ public class HttpRequest extends HttpMessage {
 
 	public void generate(OutputStream os) throws IOException {
 		generateRequestLine(os);
-
-		StringBuffer buf = new StringBuffer();
-		for (var entry : headerMap.entrySet()) {
-			buf.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
-		}
-		buf.append("\r\n");
-
-		os.write(buf.toString().getBytes());
+		generateHeaders(os);
 		os.flush();
 	}
 
@@ -59,4 +52,13 @@ public class HttpRequest extends HttpMessage {
 		os.write(buf.getBytes());
 	}
 
+	private void generateHeaders(OutputStream os) throws IOException {
+		StringBuffer buf = new StringBuffer();
+		for (var entry : headerMap.entrySet()) {
+			buf.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
+		}
+		buf.append("\r\n");
+
+		os.write(buf.toString().getBytes());
+	}
 }
