@@ -3,8 +3,6 @@ package farm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class HttpMessageParser {
 	protected PushbackInputStream is;
@@ -22,7 +20,6 @@ public abstract class HttpMessageParser {
 	 */
 	protected void messageHeader(HttpMessage msg)
 			throws IOException, UnexpectedCharException {
-		Map<String, String> map = new HashMap<String, String>();
 
 		int c;
 		while ((c = is.read()) != -1) {
@@ -54,9 +51,8 @@ public abstract class HttpMessageParser {
 				value.append((char) c);
 			}
 
-			map.put(key.toString(), value.toString());
+			msg.setHeader(key.toString(), value.toString());
 		}
-		msg.setAllHeaders(map);
 	}
 
 	protected void consum(int expected) throws IOException, UnexpectedCharException {
