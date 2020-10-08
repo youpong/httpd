@@ -49,14 +49,6 @@ public class HttpResponse extends HttpMessage {
 		return reasonPhrase;
 	}
 
-	public void setHeader(String key, String value) {
-		headerMap.put(key, value);
-	}
-
-	public String getHeader(String key) {
-		return headerMap.get(key);
-	}
-
 	public void setBody(byte[] body) {
 		this.body = body;
 	}

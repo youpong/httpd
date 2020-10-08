@@ -32,14 +32,6 @@ public class HttpRequest extends HttpMessage {
 		return httpVersion;
 	}
 
-	public void setHeader(String key, String value) {
-		headerMap.put(key, value);
-	}
-
-	public String getHeader(String key) {
-		return headerMap.get(key);
-	}
-
 	public boolean hasMessageBody() {
 		// TODO
 		return false;
