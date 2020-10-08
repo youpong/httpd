@@ -2,14 +2,11 @@ package farm;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
-public class HttpRequest {
+public class HttpRequest extends HttpMessage {
 	private String method;
 	private String requestURI;
 	private String httpVersion;
-	private Map<String, String> headerMap = new HashMap<String, String>();
 
 	public void setMethod(String method) {
 		this.method = method;
@@ -37,10 +34,6 @@ public class HttpRequest {
 
 	public void setHeader(String key, String value) {
 		headerMap.put(key, value);
-	}
-
-	public void setAllHeaders(Map<String, String> map) {
-		headerMap.putAll(map);
 	}
 
 	public String getHeader(String key) {

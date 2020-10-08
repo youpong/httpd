@@ -3,8 +3,6 @@ package farm;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HttpResponseParser extends HttpMessageParser {
 
@@ -76,50 +74,6 @@ public class HttpResponseParser extends HttpMessageParser {
 			sbuf.append((char) c);
 		}
 		response.setResonPhrase(sbuf.toString());
-	}
-
-	/**
-	 * @throws IOException
-	 * @throws UnexpectedCharException
-	 */
-	private void messageHeader(HttpResponse response)
-			throws IOException, UnexpectedCharException {
-		Map<String, String> map = new HashMap<String, String>();
-
-		int c;
-		while ((c = is.read()) != -1) {
-			// CRLF - end of header
-			if (c == '\r') {
-				consum('\n');
-				break;
-			}
-			is.unread(c);
-
-			// key
-			StringBuffer key = new StringBuffer();
-			while ((c = is.read()) != -1) {
-				if (c == ':')
-					break;
-				key.append((char) c);
-			}
-
-			// SP
-			consum(' ');
-
-			// value
-			StringBuffer value = new StringBuffer();
-			while ((c = is.read()) != -1) {
-				if (c == '\r') {
-					consum('\n');
-					break;
-				}
-				value.append((char) c);
-			}
-
-			map.put(key.toString(), value.toString());
-		}
-
-		response.setAllHeaders(map);
 	}
 
 	private void messageBody(HttpResponse response) throws IOException {

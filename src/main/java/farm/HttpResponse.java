@@ -10,12 +10,11 @@ import java.util.Map;
  * 
  * @author nakajimay
  */
-public class HttpResponse {
+public class HttpResponse extends HttpMessage {
 	private static Map<String, String> reasonPhraseMap;
 	private String httpVersion;
 	private String statusCode;
 	private String reasonPhrase;
-	private Map<String, String> headerMap = new HashMap<String, String>();
 	private byte[] body = null;
 
 	static {
@@ -52,10 +51,6 @@ public class HttpResponse {
 
 	public void setHeader(String key, String value) {
 		headerMap.put(key, value);
-	}
-
-	public void setAllHeaders(Map<String, String> map) {
-		headerMap.putAll(map);
 	}
 
 	public String getHeader(String key) {
