@@ -1,7 +1,7 @@
 package farm;
 
 public class NullRequestException extends Exception {
-	
+
 	/**
 	 * 
 	 */

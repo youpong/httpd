@@ -12,7 +12,7 @@ public abstract class HttpMessageParser {
 		this.is = new PushbackInputStream(is);
 		this.debug = debug;
 	}
-	
+
 	/**
 	 * @param request
 	 * @throws IOException

@@ -44,8 +44,8 @@ class Worker implements Runnable {
 			System.err.println(e);
 		} finally {
 			try {
-				socket.close();			
-			} catch(Exception e) {
+				socket.close();
+			} catch (Exception e) {
 				System.err.println(e);
 			}
 		}
@@ -60,7 +60,7 @@ class Worker implements Runnable {
 		case "HEAD" :
 			// HTTP Version
 			response.setHttpVersion(Server.HTTP_VERSION);
-			
+
 			// Status Code
 			File targetFile = new File(options.documentRoot(),
 					request.getRequestURI());
