@@ -10,6 +10,7 @@ import java.net.Socket;
 import farm.HttpRequest;
 import farm.HttpRequestParser;
 import farm.HttpResponse;
+import farm.Mime;
 import farm.NullRequestException;
 import farm.UnknownMethodException;
 
@@ -56,8 +57,8 @@ class Worker implements Runnable {
 		HttpResponse response = new HttpResponse();
 
 		switch (request.getMethod()) {
-		case "GET" :
-		case "HEAD" :
+		case "GET":
+		case "HEAD":
 			// HTTP Version
 			response.setHttpVersion(Server.HTTP_VERSION);
 
@@ -74,7 +75,7 @@ class Worker implements Runnable {
 			response.setHeader("Server", Server.SERVER_NAME);
 
 			// Content-Type
-			response.setHeader("Content-Type", "text/html");
+			response.setHeader("Content-Type", Mime.getMime(targetFile.getName()));
 
 			// Content-Length(set same value with GET/HEAD)
 			response.setHeader("Content-Length", Long.toString(targetFile.length()));
@@ -84,7 +85,7 @@ class Worker implements Runnable {
 				readFile(response, targetFile.getPath());
 
 			return response;
-		default :
+		default:
 			throw new UnknownMethodException("Method: " + request.getMethod());
 		}
 	}
