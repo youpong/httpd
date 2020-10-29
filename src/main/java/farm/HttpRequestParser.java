@@ -2,6 +2,7 @@ package farm;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 public class HttpRequestParser extends HttpMessageParser {
 
@@ -69,7 +70,7 @@ public class HttpRequestParser extends HttpMessageParser {
 				break;
 			sbuf.append((char) c);
 		}
-		request.setRequestURI(sbuf.toString());
+		request.setRequestURI(URLDecoder.decode(sbuf.toString(), "UTF-8"));
 
 		// HTTP-Versoin
 		sbuf = new StringBuffer();
