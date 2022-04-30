@@ -1,3 +1,5 @@
+[![Test](https://github.com/youpong/httpd/actions/workflows/test.yml/badge.svg)](https://github.com/youpong/httpd/actions/workflows/test.yml)
+
 Web Server
 ==========
 
