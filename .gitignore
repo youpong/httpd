@@ -1,9 +1,12 @@
-httpd
-a.out
-*~
-\#*#
 .classpath
 .project
-/target/
-/.cache/
-/.settings/
+.cache/
+.settings/
+
+httpd
+target/
+access.log
+
+# working files
+*~
+\#*#
